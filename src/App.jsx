@@ -1,15 +1,15 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Manager from "@/pages/Manager/Index.jsx";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      helo chào tâm nha heheheheheheeh <button onClick={() => setCount((count) => count + 1)}>Nhấn tau đi {count}</button>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Manager />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
