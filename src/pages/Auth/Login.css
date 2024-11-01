@@ -1,0 +1,7 @@
+.col-md-3 {
+    flex: 0 0 auto;
+    width: 28%;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+}
