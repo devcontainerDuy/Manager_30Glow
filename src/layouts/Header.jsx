@@ -10,7 +10,7 @@ function Header() {
   return (
     <Navbar expand="lg" className="navbar-custom" bg="light">
     <Container>
-      <Navbar.Brand Link as={Link} to="/">
+      <Navbar.Brand Link as={Link} to="/manager">
         <img
           src="http://localhost:5173/src/assets/images/logo30GLOW.png"
           alt="Logo"
@@ -18,7 +18,7 @@ function Header() {
         />
       </Navbar.Brand>
       <Nav className="me-auto">
-        <Nav.Link as={Link} to="/">Trang Chủ</Nav.Link>
+        <Nav.Link as={Link} to="/manager">Trang Chủ</Nav.Link>
         <Nav.Link as={Link} to="/baocao">Thống kê</Nav.Link>
         <Nav.Link as={Link} to="#">Thanh Toán</Nav.Link>
         <Nav.Link as={Link} to="#">Hóa đơn</Nav.Link>

@@ -12,10 +12,9 @@ function App() {
    
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Manager />} />
+        <Route path="/manager" element={<Manager/>} />
+        <Route path="/" element={<Login />} />
         <Route path="/baocao" element={<Baocao />} />
-
       </Routes>
     </Router>
   );
