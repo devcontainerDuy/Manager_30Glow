@@ -3,6 +3,9 @@ import { Form, Row, Col, Container, Button, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
 import './Login.css';
 
 function Login() {
@@ -13,45 +16,70 @@ function Login() {
     const [notification, setNotification] = useState({ message: '', type: '' });
     const navigate = useNavigate();
 
+    const notyf = new Notyf({
+        duration: 1000,
+        position: { x: 'right', y: 'top' },
+        types: [
+            {
+                type: 'warning',
+                background: 'orange',
+                icon: { className: 'material-icons', tagName: 'i', text: 'warning' },
+            },
+            {
+                type: 'error',
+                background: 'indianred',
+                duration: 2000,
+                dismissible: true,
+            },
+        ],
+    });
+
     const loginUser = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/login-manager`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/login-manager`,
+                {
                     email,
                     password,
                     remember_token: rememberToken,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                
-
-                if (data.check) {
-                    localStorage.setItem('remember_token', data.token);
-                    localStorage.setItem('check', data.check); 
-                    showNotification('Đăng nhập thành công!', 'success');
-                    setTimeout(() => {
-                        navigate('/manager'); 
-                    }, 1000);
-                } else {
-                    showNotification('Sai tài khoản hoặc mật khẩu', 'danger');
                 }
+            );
+
+            if (response.data.check) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('role', response.data.role);
+                localStorage.setItem('uid', response.data.uid);
+                localStorage.setItem('expiry', response.data.expiry);
+
+                notyf.open({
+                    type: 'success',
+                    message: 'Đăng nhập thành công!',
+                });
+
+                setTimeout(() => {
+                    if (response.data.role === 'manager') {
+                        navigate('/manager');
+                    } else if (response.data.role === 'staff') {
+                        navigate('/statistical');
+                    } else {
+                        notyf.open({
+                            type: 'error',
+                            message: 'Vai trò không hợp lệ',
+                        });
+                    }
+                }, 1000);
             } else {
-                showNotification('Sai tài khoản hoặc mật khẩu', 'danger');
+                notyf.open({
+                    type: 'error',
+                    message: 'Sai tài khoản hoặc mật khẩu',
+                });
             }
         } catch (error) {
-            showNotification('Đã xảy ra lỗi, vui lòng thử lại sau.', 'danger');
+            notyf.open({
+                type: 'error',
+                message: 'Đã xảy ra lỗi, vui lòng thử lại sau.',
+            });
         }
-    };
-
-    const showNotification = (message, type) => {
-        setNotification({ message, type });
-        setTimeout(() => {
-            setNotification({ message: '', type: '' });
-        }, 3000);
     };
 
     const handleSubmit = (e) => {

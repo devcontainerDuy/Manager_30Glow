@@ -1,10 +1,9 @@
 import React from 'react';
 import Header from "../../layouts/Header";
 import { Chart } from 'react-google-charts';
-import './Baocao.css';
+import './Statistical.css';
 
-function Baocao() {
-    // Sample data for the pie chart
+function Statistical() {
     const pieData = [
         ['Task', 'Hours per Day'],
         ['Work', 11],
@@ -14,13 +13,10 @@ function Baocao() {
         ['Sleep', 7],
     ];
 
-    // Options for the pie chart
     const pieOptions = {
         title: 'My Daily Activities',
         pieHole: 0.4,
     };
-
-    // Sample data for the bar charts
     const barData = [
         ['Month', 'Dataset 1', 'Dataset 2'],
         ['January', 65, 28],
@@ -32,7 +28,6 @@ function Baocao() {
         ['July', 40, 90],
     ];
 
-    // Options for the bar charts
     const barOptions = {
         title: 'Monthly Data',
         chartArea: { width: '50%' },
@@ -45,14 +40,12 @@ function Baocao() {
         },
     };
 
-    // Options for the line chart
     const lineOptions = {
         title: 'Line Chart Example',
         curveType: 'function',
         legend: { position: 'bottom' },
     };
 
-    // Sample data for the line chart with only one dataset
     const lineData = [
         ['Month', 'Dataset 1'],
         ['January', 65],
@@ -64,7 +57,6 @@ function Baocao() {
         ['July', 40],
     ];
 
-    // Calculate totals
     const totalBarChart1 = barData.slice(1).reduce((sum, row) => sum + row[1], 0);
     const totalBarChart2 = barData.slice(1).reduce((sum, row) => sum + row[2], 0);
     const totalPieChart = pieData.slice(1).reduce((sum, row) => sum + row[1], 0);
@@ -130,4 +122,4 @@ function Baocao() {
     );
 }
 
-export default Baocao;
+export default Statistical;

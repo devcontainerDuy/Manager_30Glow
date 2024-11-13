@@ -47,7 +47,7 @@
     color: white;
     transition: transform 0.2s, box-shadow 0.2s;
     width: 85%;
-    height: 80px; /* Adjusted height for taller boxes */
+    height: 80px; 
 }
 
 .box:nth-child(1) {
