@@ -69,7 +69,7 @@ function Index() {
 
     alert("Đã hoàn thành công việc");
     setBookings(bookings.filter((booking) => booking.id !== id));
-    delete selectedEmployees[id]; // Remove the employee selection after booking is completed
+    delete selectedEmployees[id]; // Remove the employee selection after booking is completed; 
   };
 
   const handleEmployeeChange = (bookingId, employee) => {
@@ -104,14 +104,20 @@ function Index() {
   //     prevSelected.includes(id) ? prevSelected.filter((selectedId) => selectedId !== id) : [...prevSelected, id]
   //   );
   // };
-
   // const deleteSelectedBookings = () => {
   //   setBookings(bookings.filter((booking) => !selectedBookings.includes(booking.id)));
   //   setSelectedBookings([]);
   //   alert("Đã xóa các booking đã chọn");
   // };
 
-  // console.log("Token", localStorage.getItem("token"));
+
+  const deleteSelectedBookings = () => {
+    setBookings(bookings.filter((booking) => !selectedBookings.includes(booking.id)));
+    setSelectedBookings([]);
+    alert("Đã xóa các booking đã chọn");
+  };
+  console.log("Token", localStorage.getItem("token"));
+
 
   return (
     <>
@@ -348,3 +354,4 @@ function Index() {
 }
 
 export default Index;
+
