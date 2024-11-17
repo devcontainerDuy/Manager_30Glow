@@ -63,7 +63,7 @@ function Statistical() {
     const totalLineChartViews = lineData.slice(1).reduce((sum, row) => sum + row[1], 0);
 
     return (
-        <>
+        <React.Fragment>
             <Header />
             <div className="baocao-container">
                 <div className="grid-container">
@@ -118,7 +118,7 @@ function Statistical() {
                     </div>
                 </div>
             </div>
-        </>
+        </React.Fragment>
     );
 }
 

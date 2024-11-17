@@ -3,12 +3,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Manager from "@/pages/Manager/Index.jsx";
 import Statistical from "./pages/Statistical/Statistical";
+import Staff from "./pages/staff/Staff";
 import Login from "./pages/Auth/Login";
 
-const isLoggedIn = localStorage.getItem('token');
-const userRole = localStorage.getItem('role');
 
 function App() {
+  const isLoggedIn = !!localStorage.getItem('token'); 
+  const userRole = localStorage.getItem('role');
+
   const ProtectedRoute = ({ children, roleRequired }) => {
     if (!isLoggedIn) {
       return <Navigate to="/" />;
@@ -39,13 +41,14 @@ function App() {
           }
         />
         <Route
-          path="/#"
-          element={
-            <ProtectedRoute roleRequired="staff">
-              <Statistical />
-            </ProtectedRoute>
-          }
-        />
+            path="/staff" 
+            element={
+              <ProtectedRoute roleRequired="staff">
+                <Staff />
+              </ProtectedRoute>
+            }
+          />
+
         <Route path="/" element={<Login />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
