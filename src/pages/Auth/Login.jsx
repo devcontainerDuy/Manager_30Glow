@@ -32,7 +32,7 @@ const Login = () => {
                 notyf.success('Đăng nhập thành công!');
 
                 if (role === 'manager') navigate('/manager');
-                else if (role === 'staff') navigate('/Staff');
+                else if (role === 'staff') navigate('/staff-statistical');
                 else notyf.error('Vai trò không hợp lệ.');
             } else {
                 notyf.error('Sai tài khoản hoặc mật khẩu.');

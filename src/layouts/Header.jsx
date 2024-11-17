@@ -1,15 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
-import { Link } from 'react-router-dom'; 
 import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import './Header.css';
+import Nav from 'react-bootstrap/Nav';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
+import './Header.css';
 
 function Header() {
-
   const navigate = useNavigate();
   const notyf = new Notyf();
 
@@ -26,11 +24,6 @@ function Header() {
     } catch (error) {
       notyf.error('Đăng xuất thất bại!');
     }
-
-  const Logout = () => {
-    localStorage.clear(); 
-    window.location.replace('/'); 
-
   };
 
   return (
@@ -53,7 +46,6 @@ function Header() {
             <Nav.Link onClick={handleLogout} style={{ cursor: 'pointer' }}>
               Đăng xuất
             </Nav.Link>
-            <Nav.Link onClick={Logout}>Đăng xuất</Nav.Link> 
           </Nav>
           <Nav>
             <div className="navbar-end d-flex align-items-center">
@@ -69,6 +61,6 @@ function Header() {
       </Container>
     </Navbar>
   );
-}}
+}
 
 export default Header;
