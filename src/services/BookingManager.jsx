@@ -1,7 +1,7 @@
 import api from "../utils/api";
 
-const getBooking = ()=>{
-    return api.get("/bookings")
-}
+const getBooking = (currentPage) => {
+  return api.get(`/bookings?page=${currentPage}`);
+};
 
-export {getBooking}
+export { getBooking };

@@ -211,6 +211,24 @@ a {
   }
 }
 
+.table-responsive{
+ overflow-x: auto;
+ white-space: nowrap;
+}
+
+.table-responsive::-webkit-scrollbar{
+  height: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb{
+  border-radius: 5px;
+  background: #007bff;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover{
+  background: #0056b3;
+}
+
 @media (max-width: 768px) {
   .col-md-3 {
     flex: 0 0 100%;

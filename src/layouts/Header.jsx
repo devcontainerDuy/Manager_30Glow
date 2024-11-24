@@ -6,19 +6,17 @@ import Nav from 'react-bootstrap/Nav';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import './Header.css';
+import { useDispatch } from 'react-redux';
+import { logout } from '../stores/actions/authAction';
 
 function Header() {
+  const dispath=useDispatch();
   const navigate = useNavigate();
   const notyf = new Notyf();
 
   const handleLogout = async () => {
     try {
-      await Promise.all([
-        localStorage.removeItem('token'),
-        localStorage.removeItem('role'),
-        localStorage.removeItem('uid'),
-        localStorage.removeItem('expiry'),
-      ]);
+      dispath(logout())
       notyf.success('Đăng xuất thành công!');
       navigate('/');
     } catch (error) {
@@ -42,7 +40,7 @@ function Header() {
             <Nav.Link as={Link} to="/manager">Trang Chủ</Nav.Link>
             <Nav.Link as={Link} to="/statistical">Thống kê</Nav.Link>
             <Nav.Link as={Link} to="/staff">Thanh Toán</Nav.Link>
-            <Nav.Link as={Link} to="#">Hóa đơn</Nav.Link>
+            <Nav.Link as={Link} to="/bill">Hóa đơn</Nav.Link>
             <Nav.Link onClick={handleLogout} style={{ cursor: 'pointer' }}>
               Đăng xuất
             </Nav.Link>

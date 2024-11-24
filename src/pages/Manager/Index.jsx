@@ -6,14 +6,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { getBooking } from "../../services/BookingManager";
+import Pagination from "../../components/pagination";
+import { getStaff } from "../../services/Staff";
 
 function Index() {
   const [open, setOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
+  const [staff, setStaff] = useState([]);
   // useState tạo biến lần đầu tiên
   const [idBooking, setIdBooking] = useState(0);
   const [note, setNote] = useState("");
-  const [selectedEmployees, setSelectedEmployees] = useState({});
   const [filter, setFilter] = useState({
     serviceName: "",
     customerName: "",
@@ -21,18 +23,35 @@ function Index() {
     time: "",
   });
   const [selectedBookings, setSelectedBookings] = useState([]);
-// useState, useEffect nó chỉ chạy khi lần đầu khởi tạo và chỉ chạy 1 lần 
-  useEffect(() => {  // useEffect gọi api tự tìm hiểu lifecircle của react classconponent functionconponent hook
+
+  const [limit, setLimit] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotaPage] = useState(1);
+
+  const [selectStaff, setSelectStaff] = useState("");
+  // useState, useEffect nó chỉ chạy khi lần đầu khởi tạo và chỉ chạy 1 lần
+  useEffect(() => {
+    // useEffect gọi api tự tìm hiểu lifecircle của react classconponent functionconponent hook
     const fetchBooking = async () => {
       try {
-        const response = await getBooking();
+        const response = await getBooking({ currentPage });
         setBookings(response.data);
-        console.log("response", response);
+        setTotaPage(response.data.last_page);
       } catch (error) {
         console.log("error", error);
       }
     };
-    fetchBooking();// chỉ gọi nó ra cho nó run
+
+    const fetchStaff = async () => {
+      try {
+        const response = await getStaff();
+        setStaff(response.data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchBooking(); // chỉ gọi nó ra cho nó run
+    fetchStaff(); // chỉ gọi nó ra cho nó run
   }, []);
 
   const handleOpen = (id) => {
@@ -59,31 +78,14 @@ function Index() {
     }
   };
 
-  const submitBooking = (id) => {
-    const selectedEmployee = selectedEmployees[id];
-
-    if (!selectedEmployee) {
-      alert("Vui lòng chọn nhân viên trước khi hoàn thành công việc");
-      return;
-    }
-
-    alert("Đã hoàn thành công việc");
-    setBookings(bookings.filter((booking) => booking.id !== id));
-    delete selectedEmployees[id]; // Remove the employee selection after booking is completed; 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
-  const handleEmployeeChange = (bookingId, employee) => {
-    setSelectedEmployees((prev) => ({ ...prev, [bookingId]: employee }));
+  const handleChangeLimit = (limitPage) => {
+    setLimit(limitPage);
+    setCurrentPage(1);
   };
-
-  const getAvailableEmployees = (bookingId) => {
-    const chosenEmployees = Object.values(selectedEmployees);
-    return ["nhan-vien-1", "nhan-vien-2", "nhan-vien-3"].filter(
-      (emp) =>
-        !chosenEmployees.includes(emp) || emp === selectedEmployees[bookingId]
-    );
-  };
-
   // const filteredBookings = bookings.filter(booking =>
   //   booking.service_name.toLowerCase().includes(filter.serviceName.toLowerCase()) &&
   //   booking.customer_name.toLowerCase().includes(filter.customerName.toLowerCase()) &&
@@ -110,14 +112,28 @@ function Index() {
   //   alert("Đã xóa các booking đã chọn");
   // };
 
-
   const deleteSelectedBookings = () => {
-    setBookings(bookings.filter((booking) => !selectedBookings.includes(booking.id)));
+    setBookings(
+      bookings.filter((booking) => !selectedBookings.includes(booking.id))
+    );
     setSelectedBookings([]);
     alert("Đã xóa các booking đã chọn");
   };
-  console.log("Token", localStorage.getItem("token"));
 
+  const handleSelectStaff = (e) => {
+    e.preventDefault();
+    const setStaff = {selectStaff, bookings}
+    console.log("select staff:", setStaff);
+    if(!selectStaff){
+      alert("Vui lòng chọn nhân viên!");
+      return;
+    }
+
+    const updateBookings = bookings.data.map((booking)=>booking.id === idBooking ? {...booking, staffId: selectStaff}:booking)
+    setBookings({...bookings, data:updateBookings});
+    console.log("update staff: ", updateBookings);
+    
+  };
 
   return (
     <>
@@ -227,82 +243,82 @@ function Index() {
             </div>
           </div>
         </div>
-
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>
-                <input
-                  type="checkbox"
-                  // onChange={toggleSelectAll}
-                  // checked={selectedBookings.length === filteredBookings.length && filteredBookings.length > 0}
-                />
-              </th>
-              <th>STT</th>
-              <th>Tên dịch vụ</th>
-              <th>Tên khách hàng</th>
-              <th>Số điện thoại</th>
-              <th>Thời gian</th>
-              <th>Nhân viên</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.map((booking, index) => (
-              <tr key={booking.id}>
-                <td>
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>
                   <input
                     type="checkbox"
-                    checked={selectedBookings.includes(booking.id)}
-                    // onChange={() => toggleSelectBooking(booking.id)}
+                    // onChange={toggleSelectAll}
+                    // checked={selectedBookings.length === filteredBookings.length && filteredBookings.length > 0}
                   />
-                </td>
-                <td>{index + 1}</td>
-                <td>
-                  {booking.service.map((service, index) => (
-                    <div key={index}>{index+1}-{service.name}</div>
-                  ))}
-                </td>
-                <td>
-                  {booking.customer.name}
-                </td>
-                <td>{booking.phone}</td>
-                <td>{new Date(booking.time).toLocaleString()}</td>
-                <td>
-                  <select
-                    onChange={(e) =>
-                      handleEmployeeChange(booking.id, e.target.value)
-                    }
-                    defaultValue={selectedEmployees[booking.id] || ""}
-                  >
-                    <option value="" disabled>
-                      Chọn nhân viên
-                    </option>
-                    {getAvailableEmployees(booking.id).map((emp) => (
-                      <option key={emp} value={emp}>
-                        {emp}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  {/* <button className="btn btn-sm btn-primary" onClick={() => submitBooking(booking.id)}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  </button>
-                  <button className="btn btn-sm btn-danger ms-3" onClick={() => cancelBooking(booking.id)}>
-                  <FontAwesomeIcon icon={faTrashAlt} />
-                  </button> */}
-                  <button className="btn btn-sm btn-primary" >
-                  <FontAwesomeIcon icon={faCheck} />
-                  </button>
-                  <button className="btn btn-sm btn-danger ms-3">
-                  <FontAwesomeIcon icon={faTrashAlt} />
-                  </button>
-                </td>
+                </th>
+                <th>STT</th>
+                <th>Tên dịch vụ</th>
+                <th>Tên khách hàng</th>
+                <th>Số điện thoại</th>
+                <th>Thời gian</th>
+                <th>Nhân viên</th>
+                <th>Thao tác</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bookings.data &&
+                bookings.data.map((booking, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedBookings.includes(booking.id)}
+                      />
+                    </td>
+                    <td>{booking.id}</td>
+                    <td>
+                      {booking.service.map((service, index) => (
+                        <div key={index}>
+                          {index + 1}-{service.name}
+                        </div>
+                      ))}
+                    </td>
+                    <td>{booking.customer.name}</td>
+                    <td>{booking.phone}</td>
+                    <td>{new Date(booking.time).toLocaleString()}</td>
+                    <td>
+                      <select
+                        onChange={(e) => {setSelectStaff(e.target.value);
+                          setIdBooking(booking.id);
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>
+                          Chọn nhân viên
+                        </option>
+                        {staff.map((staff, index) => (
+                          <option key={index} value={staff.uid}>
+                            {staff.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <div className="d-flex">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={handleSelectStaff}
+                        >
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                        <button className="btn btn-sm btn-danger ms-3">
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
         <div className="d-flex justify-content-end mb-3">
           {/* <button className="btn btn-danger" onClick={deleteSelectedBookings} disabled={selectedBookings.length === 0}>
             Xóa mục đã chọn
@@ -310,48 +326,16 @@ function Index() {
         </div>
       </div>
 
-      <nav className="d-flex justify-content-center mx-auto">
-        <ul className="pagination">
-          <li className="page-item disabled">
-            <span className="page-link">Page 1/4</span>
-          </li>
-          <li className="page-item disabled">
-            <span className="page-link">First</span>
-          </li>
-          <li className="page-item active">
-            <span className="page-link">1</span>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              2
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              3
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              4
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#" rel="next">
-              Next
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#" rel="next">
-              Last
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <Pagination
+        currentPage={currentPage}
+        totalPage={totalPage}
+        onPageChange={handlePageChange}
+        // limit={limit}
+        // onChangeLimit={handleChangeLimit}
+      />
       <p className="mb-4 text-end me-5">© 2024, Developed by 30GLOW</p>
     </>
   );
 }
 
 export default Index;
-
