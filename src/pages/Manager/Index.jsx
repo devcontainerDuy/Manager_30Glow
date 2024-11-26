@@ -48,6 +48,8 @@ function Index() {
         });
         if (res.data.check === true) {
           setData(res.data.data.data);
+          setTotalPage(res.data.data.last_page);
+          setPage(res.data.data.current_page);
         }
       } catch (err) {
         console.log(err);
