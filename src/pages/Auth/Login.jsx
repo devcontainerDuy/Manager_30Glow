@@ -27,11 +27,14 @@ const Login = () => {
 
       if (response.check) {
         dispath(login(response));
-        notyf.success("Đăng nhập thành công!");
-
+        
         if (response.role === "manager") {
           navigate("/manager");
-        } else if (role === "staff") navigate("/staff-statistical");
+          notyf.success("Đăng nhập thành công!");
+        } else if (response.role === "staff") {
+          navigate("/staff");
+          notyf.success("Đăng nhập thành công!");
+        }
         else notyf.error("Vai trò không hợp lệ.");
       } else {
         notyf.error("Sai tài khoản hoặc mật khẩu.");

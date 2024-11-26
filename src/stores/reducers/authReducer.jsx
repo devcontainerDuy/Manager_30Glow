@@ -5,6 +5,7 @@ const intialState = {
   expiry: null,
   check: null,
   token: null,
+  name: null,
 };
 
 const authReducer = (state = intialState, action) => {
@@ -18,6 +19,7 @@ const authReducer = (state = intialState, action) => {
         check: action.payload.check,
         expiry: action.payload.expiry,
         token: action.payload.token,
+        name: action.payload.name,
       };
     case "LOGOUT":
       return {
@@ -28,6 +30,7 @@ const authReducer = (state = intialState, action) => {
         check: null,
         expiry: null,
         token: null,
+        name: null,
       };
     default:
       return state;

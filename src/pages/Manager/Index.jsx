@@ -8,21 +8,22 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { getBooking } from "../../services/BookingManager";
 import Pagination from "../../components/pagination";
 import { getStaff } from "../../services/Staff";
+import { getService } from "../../services/ServiceManager";
 
 function Index() {
   const [open, setOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
+  const [services, setServices] = useState([]);
   const [staff, setStaff] = useState([]);
   // useState tạo biến lần đầu tiên
   const [idBooking, setIdBooking] = useState(0);
-  const [note, setNote] = useState("");
+  const [reasonCancel, setReasonCancel] = useState("");
   const [filter, setFilter] = useState({
     serviceName: "",
     customerName: "",
     phone: "",
     time: "",
   });
-  const [selectedBookings, setSelectedBookings] = useState([]);
 
   const [limit, setLimit] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,33 +51,63 @@ function Index() {
         console.log("error", error);
       }
     };
+
+    const fetchServices = async()=>{
+      try {
+        const response = await getService();
+        setServices(response.data.data);
+      } catch (error) {
+        console.log('error',error);
+        
+      }
+    }
     fetchBooking(); // chỉ gọi nó ra cho nó run
     fetchStaff(); // chỉ gọi nó ra cho nó run
+    fetchServices(); // chỉ gọi nó ra cho nó run
   }, []);
 
-  const handleOpen = (id) => {
+  const handleSelectStaff = (bookingId) => {
+    if (!selectStaff) {
+      alert("Vui lòng chọn nhân viên!");
+      return;
+    }
+
+    const updateBookings = bookings.data.map((booking) =>
+      booking.id === idBooking
+        ? { ...booking, staffId: selectStaff, status: 1 }
+        : booking
+    );
+    setBookings({ ...bookings, data: updateBookings });
+    console.log("update staff: ", updateBookings);
+  };
+
+  const handleCancelBooking = (id) => {
     setIdBooking(id);
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setNote("");
-  };
-
-  const cancelBooking = (id) => {
-    handleOpen(id);
-  };
-
-  const submitCancel = () => {
-    if (note === "") {
-      alert("Vui lòng nhập lý do");
-    } else {
-      alert("Đã hủy công việc");
-      setBookings(bookings.filter((booking) => booking.id !== idBooking));
-      handleClose();
+  const submitCancelBooking = (bookingId) => {
+    if (reasonCancel.trim()==="") {
+      alert(`da huy bookingId ${bookingId} voi ly do ${reasonCancel} `);
+      return;
     }
-  };
+    
+    const updateBookings = bookings.data.map((booking) =>
+      booking.id === idBooking
+    ? { ...booking, reasonCancel:'', status: 5 }
+    : booking
+  );
+  setBookings({ ...bookings, data: updateBookings });
+  console.log("cancel booking: ", updateBookings);
+  alert(`da huy bookingId ${idBooking} voi ly do ${reasonCancel} `);
+  handleClose();
+};
+
+const handleClose = () => {
+  setOpen(false);
+  setReasonCancel("");
+  console.log("reasonCancel:", reasonCancel);
+};
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -85,54 +116,6 @@ function Index() {
   const handleChangeLimit = (limitPage) => {
     setLimit(limitPage);
     setCurrentPage(1);
-  };
-  // const filteredBookings = bookings.filter(booking =>
-  //   booking.service_name.toLowerCase().includes(filter.serviceName.toLowerCase()) &&
-  //   booking.customer_name.toLowerCase().includes(filter.customerName.toLowerCase()) &&
-  //   booking.phone.includes(filter.phone) &&
-  //   booking.time.includes(filter.time)
-  // );
-
-  // const toggleSelectAll = () => {
-  //   if (selectedBookings.length === filteredBookings.length) {
-  //     setSelectedBookings([]);
-  //   } else {
-  //     setSelectedBookings(filteredBookings.map(booking => booking.id));
-  //   }
-  // };
-
-  // const toggleSelectBooking = (id) => {
-  //   setSelectedBookings((prevSelected) =>
-  //     prevSelected.includes(id) ? prevSelected.filter((selectedId) => selectedId !== id) : [...prevSelected, id]
-  //   );
-  // };
-  // const deleteSelectedBookings = () => {
-  //   setBookings(bookings.filter((booking) => !selectedBookings.includes(booking.id)));
-  //   setSelectedBookings([]);
-  //   alert("Đã xóa các booking đã chọn");
-  // };
-
-  const deleteSelectedBookings = () => {
-    setBookings(
-      bookings.filter((booking) => !selectedBookings.includes(booking.id))
-    );
-    setSelectedBookings([]);
-    alert("Đã xóa các booking đã chọn");
-  };
-
-  const handleSelectStaff = (e) => {
-    e.preventDefault();
-    const setStaff = {selectStaff, bookings}
-    console.log("select staff:", setStaff);
-    if(!selectStaff){
-      alert("Vui lòng chọn nhân viên!");
-      return;
-    }
-
-    const updateBookings = bookings.data.map((booking)=>booking.id === idBooking ? {...booking, staffId: selectStaff}:booking)
-    setBookings({...bookings, data:updateBookings});
-    console.log("update staff: ", updateBookings);
-    
   };
 
   return (
@@ -155,13 +138,13 @@ function Index() {
                   type="text"
                   className="form-control"
                   placeholder="Ghi chú hủy ..."
-                  onChange={(e) => setNote(e.target.value)}
+                  onChange={(e) => setReasonCancel(e.target.value)}
                 />
               </div>
               <div className="modal-footer">
                 <button
                   className="btn btn-outline-success"
-                  onClick={submitCancel}
+                  onClick={submitCancelBooking}
                 >
                   Xác nhận
                 </button>
@@ -188,16 +171,21 @@ function Index() {
               <label htmlFor="serviceName" className="form-label">
                 Tên dịch vụ
               </label>
-              <input
-                type="text"
-                className="form-control"
-                id="serviceName"
-                placeholder="Nhập tên dịch vụ"
-                value={filter.serviceName}
-                onChange={(e) =>
-                  setFilter({ ...filter, serviceName: e.target.value })
-                }
-              />
+              <select
+                        onChange={(e) => {
+                          setServices(e.target.value);
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>
+                          Chọn dịch vụ
+                        </option>
+                        {services.map((services, index) => (
+                          <option key={index} value={services.id}>
+                            {services.name}
+                          </option>
+                        ))}
+                      </select>
             </div>
             <div className="form-group col-md-4">
               <label htmlFor="customerName" className="form-label">
@@ -247,13 +235,6 @@ function Index() {
           <table className="table table-bordered table-striped">
             <thead>
               <tr>
-                <th>
-                  <input
-                    type="checkbox"
-                    // onChange={toggleSelectAll}
-                    // checked={selectedBookings.length === filteredBookings.length && filteredBookings.length > 0}
-                  />
-                </th>
                 <th>STT</th>
                 <th>Tên dịch vụ</th>
                 <th>Tên khách hàng</th>
@@ -267,12 +248,6 @@ function Index() {
               {bookings.data &&
                 bookings.data.map((booking, index) => (
                   <tr key={index}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedBookings.includes(booking.id)}
-                      />
-                    </td>
                     <td>{booking.id}</td>
                     <td>
                       {booking.service.map((service, index) => (
@@ -286,7 +261,8 @@ function Index() {
                     <td>{new Date(booking.time).toLocaleString()}</td>
                     <td>
                       <select
-                        onChange={(e) => {setSelectStaff(e.target.value);
+                        onChange={(e) => {
+                          setSelectStaff(e.target.value);
                           setIdBooking(booking.id);
                         }}
                         defaultValue=""
@@ -305,11 +281,11 @@ function Index() {
                       <div className="d-flex">
                         <button
                           className="btn btn-sm btn-primary"
-                          onClick={handleSelectStaff}
+                          onClick={() => handleSelectStaff(booking.id)}
                         >
                           <FontAwesomeIcon icon={faCheck} />
                         </button>
-                        <button className="btn btn-sm btn-danger ms-3">
+                        <button className="btn btn-sm btn-danger ms-3" onClick={()=>handleCancelBooking(booking.id)}>
                           <FontAwesomeIcon icon={faTrashAlt} />
                         </button>
                       </div>
@@ -318,11 +294,6 @@ function Index() {
                 ))}
             </tbody>
           </table>
-        </div>
-        <div className="d-flex justify-content-end mb-3">
-          {/* <button className="btn btn-danger" onClick={deleteSelectedBookings} disabled={selectedBookings.length === 0}>
-            Xóa mục đã chọn
-          </button> */}
         </div>
       </div>
 
