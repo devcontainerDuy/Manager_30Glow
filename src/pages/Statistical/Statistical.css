@@ -1,0 +1,95 @@
+.baocao-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.grid-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.barchart-container {
+    flex: 0 0 60%;
+    margin-right: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: white;
+}
+
+.summary-container {
+    flex: 0 0 35%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 85%;
+    height: 80px; 
+}
+
+.box:nth-child(1) {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.box:nth-child(2) {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.box:nth-child(3) {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.box:nth-child(4) {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.row-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.border-box {
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    width: calc(33.33% - 20px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}

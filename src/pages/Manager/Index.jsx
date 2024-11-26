@@ -1,26 +1,341 @@
 import { useEffect, useState } from "react";
 import Header from "../../layouts/Header";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { getBooking } from "../../services/BookingManager";
+import Pagination from "../../components/pagination";
+import { getStaff } from "../../services/Staff";
 
-export default function Index() {
-  const [quote, setQuote] = useState("");
-  const [image, setImage] = useState("");
+function Index() {
+  const [open, setOpen] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [staff, setStaff] = useState([]);
+  // useState tạo biến lần đầu tiên
+  const [idBooking, setIdBooking] = useState(0);
+  const [note, setNote] = useState("");
+  const [filter, setFilter] = useState({
+    serviceName: "",
+    customerName: "",
+    phone: "",
+    time: "",
+  });
+  const [selectedBookings, setSelectedBookings] = useState([]);
 
+  const [limit, setLimit] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotaPage] = useState(1);
+
+  const [selectStaff, setSelectStaff] = useState("");
+  // useState, useEffect nó chỉ chạy khi lần đầu khởi tạo và chỉ chạy 1 lần
   useEffect(() => {
-    fetch("https://api.quotable.io/random")
-      .then((response) => response.json())
-      .then((data) => setQuote(data.content));
-    fetch("https://picsum.photos/200/300").then((response) => setImage(response.url));
+    // useEffect gọi api tự tìm hiểu lifecircle của react classconponent functionconponent hook
+    const fetchBooking = async () => {
+      try {
+        const response = await getBooking({ currentPage });
+        setBookings(response.data);
+        setTotaPage(response.data.last_page);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+
+    const fetchStaff = async () => {
+      try {
+        const response = await getStaff();
+        setStaff(response.data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchBooking(); // chỉ gọi nó ra cho nó run
+    fetchStaff(); // chỉ gọi nó ra cho nó run
   }, []);
+
+  const handleOpen = (id) => {
+    setIdBooking(id);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setNote("");
+  };
+
+  const cancelBooking = (id) => {
+    handleOpen(id);
+  };
+
+  const submitCancel = () => {
+    if (note === "") {
+      alert("Vui lòng nhập lý do");
+    } else {
+      alert("Đã hủy công việc");
+      setBookings(bookings.filter((booking) => booking.id !== idBooking));
+      handleClose();
+    }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleChangeLimit = (limitPage) => {
+    setLimit(limitPage);
+    setCurrentPage(1);
+  };
+  // const filteredBookings = bookings.filter(booking =>
+  //   booking.service_name.toLowerCase().includes(filter.serviceName.toLowerCase()) &&
+  //   booking.customer_name.toLowerCase().includes(filter.customerName.toLowerCase()) &&
+  //   booking.phone.includes(filter.phone) &&
+  //   booking.time.includes(filter.time)
+  // );
+
+  // const toggleSelectAll = () => {
+  //   if (selectedBookings.length === filteredBookings.length) {
+  //     setSelectedBookings([]);
+  //   } else {
+  //     setSelectedBookings(filteredBookings.map(booking => booking.id));
+  //   }
+  // };
+
+  // const toggleSelectBooking = (id) => {
+  //   setSelectedBookings((prevSelected) =>
+  //     prevSelected.includes(id) ? prevSelected.filter((selectedId) => selectedId !== id) : [...prevSelected, id]
+  //   );
+  // };
+  // const deleteSelectedBookings = () => {
+  //   setBookings(bookings.filter((booking) => !selectedBookings.includes(booking.id)));
+  //   setSelectedBookings([]);
+  //   alert("Đã xóa các booking đã chọn");
+  // };
+
+  const deleteSelectedBookings = () => {
+    setBookings(
+      bookings.filter((booking) => !selectedBookings.includes(booking.id))
+    );
+    setSelectedBookings([]);
+    alert("Đã xóa các booking đã chọn");
+  };
+
+  const handleSelectStaff = (e) => {
+    e.preventDefault();
+    const setStaff = {selectStaff, bookings}
+    console.log("select staff:", setStaff);
+    if(!selectStaff){
+      alert("Vui lòng chọn nhân viên!");
+      return;
+    }
+
+    const updateBookings = bookings.data.map((booking)=>booking.id === idBooking ? {...booking, staffId: selectStaff}:booking)
+    setBookings({...bookings, data:updateBookings});
+    console.log("update staff: ", updateBookings);
+    
+  };
+
   return (
     <>
       <Header />
-      <section>
-        <h1>Manager</h1>
-        <div>
-          <img src={image} alt="random ảnh" />
-          <blockquote>{quote}</blockquote>
+      {open && (
+        <div className="modal" style={{ display: open ? "block" : "none" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Ghi chú hủy</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleClose}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Ghi chú hủy ..."
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-outline-success"
+                  onClick={submitCancel}
+                >
+                  Xác nhận
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={handleClose}
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+      )}
+
+      <div className="container">
+        <h4>Quản lý booking</h4>
+        <div className="card card-primary card-outline text-sm mb-3">
+          <div className="card-header">
+            <h3 className="card-title">LỌC DANH SÁCH</h3>
+          </div>
+          <div className="card-body row form-group-category">
+            <div className="form-group col-md-4">
+              <label htmlFor="serviceName" className="form-label">
+                Tên dịch vụ
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="serviceName"
+                placeholder="Nhập tên dịch vụ"
+                value={filter.serviceName}
+                onChange={(e) =>
+                  setFilter({ ...filter, serviceName: e.target.value })
+                }
+              />
+            </div>
+            <div className="form-group col-md-4">
+              <label htmlFor="customerName" className="form-label">
+                Họ tên khách hàng
+              </label>
+              <input
+                placeholder="Nhập họ tên khách hàng"
+                type="text"
+                className="form-control"
+                id="customerName"
+                value={filter.customerName}
+                onChange={(e) =>
+                  setFilter({ ...filter, customerName: e.target.value })
+                }
+              />
+            </div>
+            <div className="form-group col-md-4">
+              <label htmlFor="phone" className="form-label">
+                Số điện thoại
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="phone"
+                value={filter.phone}
+                onChange={(e) =>
+                  setFilter({ ...filter, phone: e.target.value })
+                }
+                placeholder="Nhập số điện thoại"
+              />
+            </div>
+            <div className="form-group col-md-4">
+              <label htmlFor="time" className="form-label">
+                Thời gian
+              </label>
+              <input
+                type="date"
+                className="form-control"
+                id="time"
+                value={filter.time}
+                onChange={(e) => setFilter({ ...filter, time: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    // onChange={toggleSelectAll}
+                    // checked={selectedBookings.length === filteredBookings.length && filteredBookings.length > 0}
+                  />
+                </th>
+                <th>STT</th>
+                <th>Tên dịch vụ</th>
+                <th>Tên khách hàng</th>
+                <th>Số điện thoại</th>
+                <th>Thời gian</th>
+                <th>Nhân viên</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.data &&
+                bookings.data.map((booking, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedBookings.includes(booking.id)}
+                      />
+                    </td>
+                    <td>{booking.id}</td>
+                    <td>
+                      {booking.service.map((service, index) => (
+                        <div key={index}>
+                          {index + 1}-{service.name}
+                        </div>
+                      ))}
+                    </td>
+                    <td>{booking.customer.name}</td>
+                    <td>{booking.phone}</td>
+                    <td>{new Date(booking.time).toLocaleString()}</td>
+                    <td>
+                      <select
+                        onChange={(e) => {setSelectStaff(e.target.value);
+                          setIdBooking(booking.id);
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>
+                          Chọn nhân viên
+                        </option>
+                        {staff.map((staff, index) => (
+                          <option key={index} value={staff.uid}>
+                            {staff.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <div className="d-flex">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={handleSelectStaff}
+                        >
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                        <button className="btn btn-sm btn-danger ms-3">
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="d-flex justify-content-end mb-3">
+          {/* <button className="btn btn-danger" onClick={deleteSelectedBookings} disabled={selectedBookings.length === 0}>
+            Xóa mục đã chọn
+          </button> */}
+        </div>
+      </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPage={totalPage}
+        onPageChange={handlePageChange}
+        // limit={limit}
+        // onChangeLimit={handleChangeLimit}
+      />
+      <p className="mb-4 text-end me-5">© 2024, Developed by 30GLOW</p>
     </>
   );
 }
+
+export default Index;
