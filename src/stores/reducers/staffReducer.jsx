@@ -11,13 +11,6 @@ const intialStaffState = {
           ...state,
           ...action.payload
         };
-    //   case "LOGOUT":
-    //     return {
-    //       ...state,
-    //       name: null,
-    // role: null,
-    // uid: null,
-    //     };
       default:
         return state;
     }

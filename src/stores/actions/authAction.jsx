@@ -7,6 +7,7 @@ export const login = (data) => {
       expiry: data.expiry,
       token: data.token,
       role: data.role,
+      name: data.name,
     },
   };
 };

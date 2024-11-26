@@ -1,4 +1,5 @@
 import ProTypes from "prop-types";
+import "./Pagination.css"
 
 const Pagination = ({
   currentPage,
@@ -7,6 +8,8 @@ const Pagination = ({
   // limit,
   // onChangeLimit,
 }) => {
+  console.log("data page: ", currentPage, totalPage);
+  
   const handleClick = () => {
     onPageChange(currentPage + 1);
   };
@@ -19,7 +22,7 @@ const Pagination = ({
         disabled={currentPage === index + 1}
         className={currentPage === index + 1 ? "active" : ""}
       >
-        {index + 1}
+        1
       </button>
     ));
   };
@@ -41,50 +44,11 @@ const Pagination = ({
         </select>
       </div> */}
 
-      <div>
+      <div className="pagination-container">
         <button onClick={()=>handleClick(currentPage-1)} disabled={currentPage===1}>Previous</button>
         {renderPageNumber()}
         <button onClick={()=>handleClick(currentPage+1)} disabled={currentPage===totalPage}>Next</button>
       </div>
-
-      <nav className="d-flex justify-content-center mx-auto">
-        <ul className="pagination">
-          <li className="page-item disabled">
-            <span className="page-link">Page 1/4</span>
-          </li>
-          <li className="page-item disabled">
-            <span className="page-link">First</span>
-          </li>
-          <li className="page-item active">
-            <span className="page-link">1</span>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              2
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              3
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              4
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#" rel="next">
-              Next
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#" rel="next">
-              Last
-            </a>
-          </li>
-        </ul>
-      </nav>
     </div>
   );
 };
