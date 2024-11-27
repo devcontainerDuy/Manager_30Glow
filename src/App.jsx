@@ -28,7 +28,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router>  
       <Routes>
         <Route
           path="/manager"
