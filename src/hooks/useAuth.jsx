@@ -31,7 +31,9 @@ export const useAuth = () => {
           setToken(response.data.token);
           setExpiry(response.data.expiry);
           setUser(true);
-          navigate("/manager", { replace: true });
+          setTimeout(() => {
+            navigate("/danh-sach-lich", { replace: true });
+          }, 2000);
         }, 2000);
       } else {
         window.notyf.error(response.data.message);
@@ -79,6 +81,7 @@ export const useAuth = () => {
         setTimeout(() => {
           navigate("/dang-nhap", { replace: true });
         }, 2000);
+        window.notyf.success("Đăng xuất thành công!");
       }
     } catch (error) {
       console.error(error);
@@ -90,9 +93,11 @@ export const useAuth = () => {
       if (token && expiry) {
         const currentTimestamp = Math.floor(new Date().getTime() / 1000);
         if (currentTimestamp >= expiry) {
-          localStorage.removeItem("uid");
-          localStorage.removeItem("token");
-          localStorage.removeItem("expiry");
+          logout();
+          setUid(null);
+          setToken(null);
+          setExpiry(null);
+          setUser(null);
         }
       }
     };

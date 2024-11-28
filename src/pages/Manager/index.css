@@ -1,4 +1,4 @@
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -13,7 +13,12 @@ body {
   border-radius: 10px;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0 0 1rem 0;
   font-weight: 600;
   line-height: 1.4;
@@ -26,7 +31,8 @@ h1, h2, h3, h4, h5, h6 {
   margin: 20px 0;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 12px;
   text-align: left;
   border: 1px solid #ddd;
@@ -99,7 +105,8 @@ select:focus {
   border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 1rem;
   border: 1px solid #dee2e6;
   text-align: left;
@@ -115,9 +122,9 @@ select:focus {
   z-index: 2;
 }
 
-.input-group > .form-control,
-.input-group > .form-select,
-.input-group > .form-floating {
+.input-group>.form-control,
+.input-group>.form-select,
+.input-group>.form-floating {
   position: relative;
   flex: 1 1 auto;
   width: 1%;
@@ -193,6 +200,7 @@ a {
   .container {
     padding: 15px;
   }
+
   .card {
     margin-bottom: 15px;
   }
@@ -203,29 +211,31 @@ a {
     flex: 0 0 50%;
     max-width: 50%;
   }
+
   .input-group {
     flex-direction: column;
   }
+
   .input-group .form-control {
     margin-bottom: 10px;
   }
 }
 
-.table-responsive{
- overflow-x: auto;
- white-space: nowrap;
+.table-responsive {
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
-.table-responsive::-webkit-scrollbar{
+.table-responsive::-webkit-scrollbar {
   height: 10px;
 }
 
-.table-responsive::-webkit-scrollbar-thumb{
+.table-responsive::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: #007bff;
 }
 
-.table-responsive::-webkit-scrollbar-thumb:hover{
+.table-responsive::-webkit-scrollbar-thumb:hover {
   background: #0056b3;
 }
 
@@ -234,18 +244,23 @@ a {
     flex: 0 0 100%;
     max-width: 100%;
   }
+
   .container {
     padding: 10px;
   }
+
   .card {
     margin-bottom: 15px;
   }
+
   .input-group {
     flex-direction: column;
   }
+
   .input-group .form-control {
     margin-bottom: 10px;
   }
+
   .form-group {
     margin-bottom: 15px;
   }
@@ -384,7 +399,8 @@ button:hover {
   .MuiTextField-root {
     width: 100%;
   }
+
   .MuiButton-root {
     min-width: 100%;
   }
-}
+} */
