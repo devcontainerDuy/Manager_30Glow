@@ -1,122 +1,65 @@
 import { useEffect, useState } from "react";
-import Header from "../../layouts/Header";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
+import Header from "@/layouts/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { getBooking } from "../../services/BookingManager";
-import Pagination from "../../components/pagination";
-import { getStaff } from "../../services/Staff";
-import { getService } from "../../services/ServiceManager";
+import axios from "axios";
+import useAuthenContext from "@/contexts/AuthenContext";
+import Paginated from "../../components/Paginated";
 
 function Index() {
+  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
-  const [bookings, setBookings] = useState([]);
-  const [services, setServices] = useState([]);
-  const [staff, setStaff] = useState([]);
-  // useState tạo biến lần đầu tiên
-  const [idBooking, setIdBooking] = useState(0);
-  const [reasonCancel, setReasonCancel] = useState("");
-  const [filter, setFilter] = useState({
-    serviceName: "",
-    customerName: "",
-    phone: "",
-    time: "",
-  });
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
 
-  const [limit, setLimit] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotaPage] = useState(1);
+  const { logout, token } = useAuthenContext();
 
-  const [selectStaff, setSelectStaff] = useState("");
-  // useState, useEffect nó chỉ chạy khi lần đầu khởi tạo và chỉ chạy 1 lần
+  const statusMap = {
+    0: { text: "Đang chờ xếp nhân viên", class: "text-warning", icon: "bi bi-clock" },
+    1: { text: "Đã xếp nhân viên", class: "text-primary", icon: "bi bi-person-fill-check" },
+    2: { text: "Đang thực hiện", class: "text-info", icon: "bi bi-chat-right-dots-fill" },
+    3: { text: "Thành công", class: "text-success", icon: "bi bi-check-circle-fill" },
+    4: { text: "Đã thanh toán", class: "text-success", icon: "bi bi-clipboard2-check-fill" },
+    5: { text: "Thất bại", class: "text-danger", icon: "bi bi-x-circle" },
+    default: { text: "Chưa xác định", class: "text-muted", icon: "bi bi-question-circle" },
+  };
+
+  const handleStatus = async (id) => {
+    const status = statusMap[id] || statusMap.default;
+    const { text, class: statusClass, icon } = status;
+
+    // Sử dụng text, statusClass, và icon theo nhu cầu của bạn
+    console.log(text, statusClass, icon);
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
   useEffect(() => {
-    // useEffect gọi api tự tìm hiểu lifecircle của react classconponent functionconponent hook
-    const fetchBooking = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getBooking({ currentPage });
-        setBookings(response.data);
-        setTotaPage(response.data.last_page);
-      } catch (error) {
-        console.log("error", error);
+        const res = await axios.get(import.meta.env.VITE_API_URL + "/bookings?page=" + page, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+        if (res.data.check === true) {
+          setData(res.data.data.data);
+          setTotalPage(res.data.data.last_page);
+          setPage(res.data.data.current_page);
+        }
+      } catch (err) {
+        console.log(err);
+        if (err.response.message === "Unauthorized") {
+          logout();
+        }
       }
     };
-
-    const fetchStaff = async () => {
-      try {
-        const response = await getStaff();
-        setStaff(response.data);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-
-    const fetchServices = async()=>{
-      try {
-        const response = await getService();
-        setServices(response.data.data);
-      } catch (error) {
-        console.log('error',error);
-        
-      }
-    }
-    fetchBooking(); // chỉ gọi nó ra cho nó run
-    fetchStaff(); // chỉ gọi nó ra cho nó run
-    fetchServices(); // chỉ gọi nó ra cho nó run
-  }, []);
-
-  const handleSelectStaff = (bookingId) => {
-    if (!selectStaff) {
-      alert("Vui lòng chọn nhân viên!");
-      return;
-    }
-
-    const updateBookings = bookings.data.map((booking) =>
-      booking.id === idBooking
-        ? { ...booking, staffId: selectStaff, status: 1 }
-        : booking
-    );
-    setBookings({ ...bookings, data: updateBookings });
-    console.log("update staff: ", updateBookings);
-  };
-
-  const handleCancelBooking = (id) => {
-    setIdBooking(id);
-    setOpen(true);
-  };
-
-  const submitCancelBooking = (bookingId) => {
-    if (reasonCancel.trim()==="") {
-      alert(`da huy bookingId ${bookingId} voi ly do ${reasonCancel} `);
-      return;
-    }
-    
-    const updateBookings = bookings.data.map((booking) =>
-      booking.id === idBooking
-    ? { ...booking, reasonCancel:'', status: 5 }
-    : booking
-  );
-  setBookings({ ...bookings, data: updateBookings });
-  console.log("cancel booking: ", updateBookings);
-  alert(`da huy bookingId ${idBooking} voi ly do ${reasonCancel} `);
-  handleClose();
-};
-
-const handleClose = () => {
-  setOpen(false);
-  setReasonCancel("");
-  console.log("reasonCancel:", reasonCancel);
-};
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleChangeLimit = (limitPage) => {
-    setLimit(limitPage);
-    setCurrentPage(1);
-  };
+    fetchData();
+  }, [page]);
 
   return (
     <>
@@ -127,33 +70,14 @@ const handleClose = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Ghi chú hủy</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleClose}
-                ></button>
+                <button type="button" className="btn-close" onClick={() => setOpen(false)}></button>
               </div>
               <div className="modal-body">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Ghi chú hủy ..."
-                  onChange={(e) => setReasonCancel(e.target.value)}
-                />
+                <input type="text" className="form-control" placeholder="Ghi chú hủy ..." />
               </div>
               <div className="modal-footer">
-                <button
-                  className="btn btn-outline-success"
-                  onClick={submitCancelBooking}
-                >
-                  Xác nhận
-                </button>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={handleClose}
-                >
-                  Đóng
-                </button>
+                <button className="btn btn-outline-success">Xác nhận</button>
+                <button className="btn btn-outline-secondary">Đóng</button>
               </div>
             </div>
           </div>
@@ -171,63 +95,34 @@ const handleClose = () => {
               <label htmlFor="serviceName" className="form-label">
                 Tên dịch vụ
               </label>
-              <select
-                        onChange={(e) => {
-                          setServices(e.target.value);
-                        }}
-                        defaultValue=""
-                      >
-                        <option value="" disabled>
-                          Chọn dịch vụ
-                        </option>
-                        {services.map((services, index) => (
-                          <option key={index} value={services.id}>
-                            {services.name}
-                          </option>
-                        ))}
-                      </select>
+              {/* <select defaultValue="">
+                <option value="" disabled>
+                  Chọn dịch vụ
+                </option>
+                {services.map((services, index) => (
+                  <option key={index} value={services.id}>
+                    {services.name}
+                  </option>
+                ))}
+              </select> */}
             </div>
             <div className="form-group col-md-4">
               <label htmlFor="customerName" className="form-label">
                 Họ tên khách hàng
               </label>
-              <input
-                placeholder="Nhập họ tên khách hàng"
-                type="text"
-                className="form-control"
-                id="customerName"
-                value={filter.customerName}
-                onChange={(e) =>
-                  setFilter({ ...filter, customerName: e.target.value })
-                }
-              />
+              <input placeholder="Nhập họ tên khách hàng" type="text" className="form-control" id="customerName" />
             </div>
             <div className="form-group col-md-4">
               <label htmlFor="phone" className="form-label">
                 Số điện thoại
               </label>
-              <input
-                type="text"
-                className="form-control"
-                id="phone"
-                value={filter.phone}
-                onChange={(e) =>
-                  setFilter({ ...filter, phone: e.target.value })
-                }
-                placeholder="Nhập số điện thoại"
-              />
+              <input type="text" className="form-control" id="phone" placeholder="Nhập số điện thoại" />
             </div>
             <div className="form-group col-md-4">
               <label htmlFor="time" className="form-label">
                 Thời gian
               </label>
-              <input
-                type="date"
-                className="form-control"
-                id="time"
-                value={filter.time}
-                onChange={(e) => setFilter({ ...filter, time: e.target.value })}
-              />
+              <input type="date" className="form-control" id="time" />
             </div>
           </div>
         </div>
@@ -238,72 +133,44 @@ const handleClose = () => {
                 <th>STT</th>
                 <th>Tên dịch vụ</th>
                 <th>Tên khách hàng</th>
-                <th>Số điện thoại</th>
                 <th>Thời gian</th>
                 <th>Nhân viên</th>
+                <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {bookings.data &&
-                bookings.data.map((booking, index) => (
-                  <tr key={index}>
-                    <td>{booking.id}</td>
-                    <td>
-                      {booking.service.map((service, index) => (
-                        <div key={index}>
-                          {index + 1}-{service.name}
-                        </div>
-                      ))}
-                    </td>
-                    <td>{booking.customer.name}</td>
-                    <td>{booking.phone}</td>
-                    <td>{new Date(booking.time).toLocaleString()}</td>
-                    <td>
-                      <select
-                        onChange={(e) => {
-                          setSelectStaff(e.target.value);
-                          setIdBooking(booking.id);
-                        }}
-                        defaultValue=""
-                      >
-                        <option value="" disabled>
-                          Chọn nhân viên
-                        </option>
-                        {staff.map((staff, index) => (
-                          <option key={index} value={staff.uid}>
-                            {staff.name}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <div className="d-flex">
-                        <button
-                          className="btn btn-sm btn-primary"
-                          onClick={() => handleSelectStaff(booking.id)}
-                        >
-                          <FontAwesomeIcon icon={faCheck} />
-                        </button>
-                        <button className="btn btn-sm btn-danger ms-3" onClick={()=>handleCancelBooking(booking.id)}>
-                          <FontAwesomeIcon icon={faTrashAlt} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              {data.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <span title={item.service && item.service.map((item) => item.name).join(", ")}>{item.service && item.service.map((item) => item.name).join(", ")}</span>
+                  </td>
+                  <td>{item.customer?.name}</td>
+                  <td>{item.time}</td>
+                  <td>{item.user?.name || "Chưa sắp xếp nhân viên"}</td>
+                  <td>
+                    <span className={statusMap[item.status]?.class}>
+                      <i className={statusMap[item.status]?.icon}></i> {statusMap[item.status]?.text}
+                    </span>
+                  </td>
+                  <td>
+                    <button className="btn btn-danger" onClick={() => setOpen(true)}>
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </button>
+                    <button className="btn btn-success">
+                      <FontAwesomeIcon icon={faCheck} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPage={totalPage}
-        onPageChange={handlePageChange}
-        // limit={limit}
-        // onChangeLimit={handleChangeLimit}
-      />
+      <Paginated current={page} total={totalPage} handle={handlePageChange} />
+
       <p className="mb-4 text-end me-5">© 2024, Developed by 30GLOW</p>
     </>
   );
