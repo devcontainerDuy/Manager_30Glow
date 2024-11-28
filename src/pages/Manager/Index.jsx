@@ -26,14 +26,6 @@ function Index() {
     default: { text: "Chưa xác định", class: "text-muted", icon: "bi bi-question-circle" },
   };
 
-  const handleStatus = async (id) => {
-    const status = statusMap[id] || statusMap.default;
-    const { text, class: statusClass, icon } = status;
-
-    // Sử dụng text, statusClass, và icon theo nhu cầu của bạn
-    console.log(text, statusClass, icon);
-  };
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -52,7 +44,6 @@ function Index() {
           setPage(res.data.data.current_page);
         }
       } catch (err) {
-        console.log(err);
         if (err.response.message === "Unauthorized") {
           logout();
         }

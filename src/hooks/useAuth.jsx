@@ -41,11 +41,48 @@ export const useAuth = () => {
     }
   };
 
+  const getUser = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/manager/infomation`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUser(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) getUser();
+  }, [token]);
+
   const logout = async () => {
-    setTimeout(() => {
-      clearAuthInfo();
-      navigate("/dang-nhap", { replace: true });
-    }, 2000);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/logout-manager`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.check === true) {
+        clearAuthInfo();
+        setUid(null);
+        setToken(null);
+        setExpiry(null);
+        setUser(null);
+        setTimeout(() => {
+          navigate("/dang-nhap", { replace: true });
+        }, 2000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {

@@ -8,24 +8,31 @@ import Statistical from "@/pages/Statistical/Statistical";
 import Staff from "@/pages/staff/Staff";
 import Login from "@/pages/Auth/Login";
 import Bill from "@/pages/Bill/Bill";
-import useAuthenContext from "./contexts/AuthenContext";
+import useAuthenContext from "@/contexts/AuthenContext";
+import NotFound from "@/pages/Errors/NotFound";
 
 function App() {
-  const { token } = useAuthenContext();
-  console.log("Tai khoan", token);
+  const { user } = useAuthenContext();
+  console.log("Tai khoan", user);
+
   return (
     <Routes>
-      {/* {token ? (
-        <> */}
-      <Route path="/manager" element={<Manager />} />
-      <Route path="/statistical" element={<Statistical />} />
-      <Route path="/bill" element={<Bill />} />
-      <Route path="/staff" element={<Staff />} />
-      {/* </>
-      ) : ( */}
-      <Route path="/dang-nhap" element={<Login />} />
-      {/* )} */}
-      <Route path="*" element={<Navigate to="/" />} />
+      {user ? (
+        <>
+          <Route path="/manager" element={<Manager />} />
+          <Route path="/statistical" element={<Statistical />} />
+          <Route path="/bill" element={<Bill />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/dang-nhap" element={<Navigate to="/manager" />} />
+          <Route path="*" element={<Navigate to="/manager" />} />
+        </>
+      ) : (
+        <>
+          <Route path="/dang-nhap" element={<Login />} />
+          <Route path="*" element={<Navigate to="/dang-nhap" />} />
+        </>
+      )}
+      <Route path="/not-found" element={<NotFound />} />
     </Routes>
   );
 }
