@@ -57,6 +57,20 @@ function Index() {
     fetchData();
   }, [page]);
 
+  useEffect(() => {
+    const channel = window.pusher.subscribe("channelBookings");
+
+    channel.bind("BookingCreated", (response) => {
+      setData((prevData) => [response.bookingData, ...prevData]);
+    });
+
+    channel.bind("BookingUpdated", (response) => {
+      setData((prevData) => {
+        return prevData.map((booking) => (booking.id === response.bookingData.id ? response.bookingData : booking));
+      });
+    });
+  }, []);
+
   return (
     <>
       <Header />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "@/layouts/Header";
 import axios from "axios";
 import useAuthenContext from "@/contexts/AuthenContext";
@@ -10,8 +10,12 @@ import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 function Show() {
   const { id } = useParams();
   const { token } = useAuthenContext();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [staff, setStaff] = useState([]);
   const [status, setStatus] = useState(0);
+  const [userId, setUserId] = useState(null);
+  const [note, setNote] = useState("");
   console.log("Data", data);
 
   const formatDateTime = (dateString) => {
@@ -23,6 +27,49 @@ function Show() {
     const minutes = ("0" + date.getMinutes()).slice(-2);
     const seconds = ("0" + date.getSeconds()).slice(-2);
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("note", note);
+
+    if (status === 5 && note === "") {
+      window.notyf.error("Vui lòng nhập ghi chú");
+      return;
+    }
+
+    if (status === 1 && userId === null) {
+      window.notyf.error("Vui lòng chọn nhân viên");
+      return;
+    }
+
+    const payload = { status };
+
+    if (status === 5 && note) {
+      payload.note = note;
+    }
+
+    if (status === 1 && userId) {
+      payload.id_user = userId;
+    }
+
+    try {
+      const res = await axios.put(import.meta.env.VITE_API_URL + "/bookings/" + id, payload, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      });
+      if (res.data.check === true) {
+        window.notyf.success(res.data.message);
+        setTimeout(() => {
+          navigate("/danh-sach-lich/chi-tiet/" + id, { replace: true });
+        }, 2000);
+      } else {
+        window.notyf.error(res.data.message);
+      }
+    } catch (err) {
+      window.notyf.error(err.response.data.message);
+    }
   };
 
   useEffect(() => {
@@ -41,8 +88,25 @@ function Show() {
         console.error(err);
       }
     };
+
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(import.meta.env.VITE_API_URL + "/staff", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+        if (res.data.check === true) {
+          setStaff(res.data.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchData();
-  }, [id]);
+    fetchUser();
+  }, [id, token]);
 
   return (
     <>
@@ -62,15 +126,11 @@ function Show() {
                       <Card>
                         <Card.Body>
                           <Card.Title className="text-primary">Thông tin Booking</Card.Title>
-                          <Form.Group className="mb-3" controlId="note">
-                            <Form.Label>Ghi chú</Form.Label>
-                            <Form.Control as="textarea" rows={3} placeholder="Nhập ghi chú..." value={data.note} disabled />
-                          </Form.Group>
 
                           <Row className="mb-3">
                             {/* Ngày đặt */}
                             <Col md={6}>
-                              <Row className="row-gap-3">
+                              <Row className="column-gap-1">
                                 <Col xs={8}>
                                   <Form.Group className="mb-3" controlId="status">
                                     <Form.Label>Trạng thái</Form.Label>
@@ -86,7 +146,7 @@ function Show() {
                                 </Col>
                                 <Col className="text-start my-auto">
                                   <div className="pt-2">
-                                    <Button variant="primary" type="submit">
+                                    <Button variant="primary" size="md" type="button" onClick={handleSubmit}>
                                       <FontAwesomeIcon icon={faFloppyDisk} />
                                     </Button>
                                   </div>
@@ -98,6 +158,20 @@ function Show() {
                               <Form.Group controlId="bookingTime">
                                 <Form.Label>Giờ đặt</Form.Label>
                                 <Form.Control type="text" value={data.time ? formatDateTime(data.time) : ""} readOnly disabled />
+                              </Form.Group>
+                            </Col>
+
+                            <Col xs={12}>
+                              <Form.Group className="mb-3" controlId="note">
+                                <Form.Label>Ghi chú</Form.Label>
+                                <Form.Control
+                                  as="textarea"
+                                  rows={3}
+                                  placeholder="Nhập ghi chú..."
+                                  value={data.note}
+                                  disabled={data.status !== 5 && status === 5 ? false : true}
+                                  onChange={(e) => setNote(e.target.value)}
+                                />
                               </Form.Group>
                             </Col>
                           </Row>
@@ -168,27 +242,47 @@ function Show() {
                         </Card.Body>
                       </Card>
                     </Col>
-                    {status !== 0 && (
-                      <Col xs={12}>
-                        <Card>
-                          <Card.Body>
-                            <Card.Title className="text-primary">Thông tin Nhân viên</Card.Title>
-                            <p>
-                              <strong>Tên:</strong> {data.staff?.name}
-                            </p>
-                            <p>
-                              <strong>Email:</strong> <a href={`mailto:${data.staff?.email}`}>{data.staff?.email}</a>
-                            </p>
-                            <p>
-                              <strong>Số điện thoại:</strong> {data.staff?.phone || "Không có"}
-                            </p>
-                            <p>
-                              <strong>Địa chi:</strong> {data.staff?.address || "Không có"}
-                            </p>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    )}
+                    <Col xs={12}>
+                      <Card>
+                        <Card.Body>
+                          {status !== 0 && data.user !== null ? (
+                            <>
+                              <Card.Title className="text-primary">Thông tin Nhân viên</Card.Title>
+                              <p>
+                                <strong>Tên:</strong> {data.user?.name}
+                              </p>
+                              <p>
+                                <strong>Email:</strong> <a href={`mailto:${data.user?.email}`}>{data.user?.email}</a>
+                              </p>
+                              <p>
+                                <strong>Số điện thoại:</strong> {data.user?.phone || "Không có"}
+                              </p>
+                              <p>
+                                <strong>Địa chi:</strong> {data.user?.address || "Không có"}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <Card.Title className="text-primary">Chọn nhân viên</Card.Title>
+                              <Form.Group className="mt-3" controlId="user_id">
+                                <Form.Select value={userId} onChange={(e) => setUserId(e.target.value)}>
+                                  <option value="">Chọn nhân viên</option>
+                                  {staff.length > 0 ? (
+                                    staff.map((item) => (
+                                      <option key={item.id} value={item.uid}>
+                                        {item.name}
+                                      </option>
+                                    ))
+                                  ) : (
+                                    <option value="">Không có nhân viên nào</option>
+                                  )}
+                                </Form.Select>
+                              </Form.Group>
+                            </>
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Col>
                   </Row>
                 </Col>
               </Row>
