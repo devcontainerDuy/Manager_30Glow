@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 import "./index.css";
 import Header from "@/layouts/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import useAuthenContext from "@/contexts/AuthenContext";
-import Paginated from "../../components/Paginated";
+import Paginated from "@/components/Paginated";
+import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function Index() {
   const [data, setData] = useState([]);
-  const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const navigate = useNavigate();
 
   const { logout, token } = useAuthenContext();
 
@@ -26,16 +27,12 @@ function Index() {
     default: { text: "Chưa xác định", class: "text-muted", icon: "bi bi-question-circle" },
   };
 
-  const handleStatus = async (id) => {
-    const status = statusMap[id] || statusMap.default;
-    const { text, class: statusClass, icon } = status;
-
-    // Sử dụng text, statusClass, và icon theo nhu cầu của bạn
-    console.log(text, statusClass, icon);
-  };
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
+  };
+
+  const handleDetail = (id) => {
+    navigate("/danh-sach-lich/chi-tiet/" + id);
   };
 
   useEffect(() => {
@@ -52,7 +49,6 @@ function Index() {
           setPage(res.data.data.current_page);
         }
       } catch (err) {
-        console.log(err);
         if (err.response.message === "Unauthorized") {
           logout();
         }
@@ -61,90 +57,88 @@ function Index() {
     fetchData();
   }, [page]);
 
+  useEffect(() => {
+    const channel = window.pusher.subscribe("channelBookings");
+
+    channel.bind("BookingCreated", (response) => {
+      setData((prevData) => [response.bookingData, ...prevData]);
+    });
+
+    channel.bind("BookingUpdated", (response) => {
+      setData((prevData) => {
+        return prevData.map((booking) => (booking.id === response.bookingData.id ? response.bookingData : booking));
+      });
+    });
+  }, []);
+
   return (
     <>
       <Header />
-      {open && (
-        <div className="modal" style={{ display: open ? "block" : "none" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Ghi chú hủy</h5>
-                <button type="button" className="btn-close" onClick={() => setOpen(false)}></button>
-              </div>
-              <div className="modal-body">
-                <input type="text" className="form-control" placeholder="Ghi chú hủy ..." />
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-outline-success">Xác nhận</button>
-                <button className="btn btn-outline-secondary">Đóng</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      <div className="container">
+      <Container>
         <h4>Quản lý booking</h4>
-        <div className="card card-primary card-outline text-sm mb-3">
-          <div className="card-header">
-            <h3 className="card-title">LỌC DANH SÁCH</h3>
-          </div>
-          <div className="card-body row form-group-category">
-            <div className="form-group col-md-4">
-              <label htmlFor="serviceName" className="form-label">
-                Tên dịch vụ
-              </label>
-              {/* <select defaultValue="">
-                <option value="" disabled>
-                  Chọn dịch vụ
-                </option>
-                {services.map((services, index) => (
-                  <option key={index} value={services.id}>
-                    {services.name}
-                  </option>
-                ))}
-              </select> */}
-            </div>
-            <div className="form-group col-md-4">
-              <label htmlFor="customerName" className="form-label">
-                Họ tên khách hàng
-              </label>
-              <input placeholder="Nhập họ tên khách hàng" type="text" className="form-control" id="customerName" />
-            </div>
-            <div className="form-group col-md-4">
-              <label htmlFor="phone" className="form-label">
-                Số điện thoại
-              </label>
-              <input type="text" className="form-control" id="phone" placeholder="Nhập số điện thoại" />
-            </div>
-            <div className="form-group col-md-4">
-              <label htmlFor="time" className="form-label">
-                Thời gian
-              </label>
-              <input type="date" className="form-control" id="time" />
-            </div>
-          </div>
-        </div>
-        <div className="table-responsive">
-          <table className="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>STT</th>
-                <th>Tên dịch vụ</th>
-                <th>Tên khách hàng</th>
-                <th>Thời gian</th>
-                <th>Nhân viên</th>
-                <th>Trạng thái</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
+        <Card className="card-primary card-outline text-sm mb-3">
+          <Card.Header>
+            <Card.Title className="h3">LỌC DANH SÁCH</Card.Title>
+          </Card.Header>
+          <Card.Body className="form-group-category">
+            <Row className="row-gap-3 row-cols-md-4">
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label controlId="service">Tên dịch vụ</Form.Label>
+                  <Form.Select id="service" className="form-select">
+                    <option value="1">Dịch vụ 1</option>
+                    <option value="2">Dịch vụ 2</option>
+                    <option value="3">Dịch vụ 3</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label controlId="customer">Tên khách hàng</Form.Label>
+                  <Form.Control type="text" className="form-control" id="customer" placeholder="Nhập tên khách hàng" />
+                </Form.Group>
+              </Col>
+
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label controlId="phone">Số điện thoại</Form.Label>
+                  <Form.Control type="text" className="form-control" id="phone" placeholder="Nhập số điện thoại" />
+                </Form.Group>
+              </Col>
+
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label controlId="time">Thời gian</Form.Label>
+                  <Form.Control type="date" className="form-control" id="time" />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Tên dịch vụ</th>
+              <th>Tên khách hàng</th>
+              <th>Thời gian</th>
+              <th>Nhân viên</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.length > 0 ? (
+              data.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>
-                    <span title={item.service && item.service.map((item) => item.name).join(", ")}>{item.service && item.service.map((item) => item.name).join(", ")}</span>
+                    <span className="text-break" title={item.service && item.service.map((item) => item.name).join(", ")}>
+                      {item.service && item.service.map((item) => item.name).join(", ")}
+                    </span>
                   </td>
                   <td>{item.customer?.name}</td>
                   <td>{item.time}</td>
@@ -155,19 +149,27 @@ function Index() {
                     </span>
                   </td>
                   <td>
-                    <button className="btn btn-danger" onClick={() => setOpen(true)}>
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                    <button className="btn btn-success">
-                      <FontAwesomeIcon icon={faCheck} />
-                    </button>
+                    <div className="d-flex gap-2">
+                      <Button type="button" variant="danger">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </Button>
+                      <Button type="button" variant="info" title="Chi tiết" onClick={() => handleDetail(item.id)}>
+                        <FontAwesomeIcon icon={faCircleInfo} />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center">
+                  Không có dữ liệu
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </Container>
 
       <Paginated current={page} total={totalPage} handle={handlePageChange} />
 
