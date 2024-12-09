@@ -22,7 +22,11 @@ export const useAuth = () => {
 
   const login = async ({ ...data }) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login-manager`, { ...data });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/login-manager`,
+        { ...data }
+      );
+
       if (response.data.check === true) {
         saveAuthInfo(response.data);
         window.notyf.success("Đăng nhập thành công!");
@@ -31,9 +35,13 @@ export const useAuth = () => {
           setToken(response.data.token);
           setExpiry(response.data.expiry);
           setUser(true);
-          setTimeout(() => {
-            navigate("/danh-sach-lich", { replace: true });
-          }, 2000);
+
+          const targetPath =
+            response.data.role === "manager" ? "/manager" : "/staff";
+
+          navigate(targetPath, {
+            replace: true,
+          });
         }, 2000);
       } else {
         window.notyf.error(response.data.message);
@@ -45,11 +53,14 @@ export const useAuth = () => {
 
   const getUser = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/manager/infomation`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/manager/infomation`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUser(response.data.data);
     } catch (error) {
       console.error(error);
@@ -78,9 +89,7 @@ export const useAuth = () => {
         setToken(null);
         setExpiry(null);
         setUser(null);
-        setTimeout(() => {
-          navigate("/dang-nhap", { replace: true });
-        }, 2000);
+        navigate("/dang-nhap", { replace: true });
         window.notyf.success("Đăng xuất thành công!");
       }
     } catch (error) {

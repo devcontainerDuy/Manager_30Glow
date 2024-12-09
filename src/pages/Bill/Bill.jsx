@@ -1,71 +1,146 @@
-import React from "react";
-import Header from "../../layouts/Header";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Button, Container, Table } from "react-bootstrap";
+import useAuthenContext from "@/contexts/AuthenContext";
+import { faCircleInfo, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import BillDetail from "../BillDetail/BillDetail";
+// import PropTypes from "prop-types";
 
 function Bill() {
+  const { token } = useAuthenContext();
+  const [bills, setBills] = useState([]);
+  const [selectedBill, setSelectedBill] = useState(null);
+
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+
+  const statusMap = {
+    0: {
+      text: "Đang chờ xếp nhân viên",
+      class: "text-warning",
+      icon: "bi bi-clock",
+    },
+    1: {
+      text: "Đã xếp nhân viên",
+      class: "text-primary",
+      icon: "bi bi-person-fill-check",
+    },
+    2: {
+      text: "Đang thực hiện",
+      class: "text-info",
+      icon: "bi bi-chat-right-dots-fill",
+    },
+    3: {
+      text: "Thành công",
+      class: "text-success",
+      icon: "bi bi-check-circle-fill",
+    },
+    4: {
+      text: "Đã thanh toán",
+      class: "text-success",
+      icon: "bi bi-clipboard2-check-fill",
+    },
+    5: { text: "Thất bại", class: "text-danger", icon: "bi bi-x-circle" },
+    default: {
+      text: "Chưa xác định",
+      class: "text-muted",
+      icon: "bi bi-question-circle",
+    },
+  };
+
+  useEffect(() => {
+    const fetchBills = async () => {
+      try {
+        const res = await axios.get(
+          import.meta.env.VITE_API_URL + "/bills/list",
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+        if (res.data.check === true) {
+          setBills(res.data.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBills();
+  }, [token]);
+
+  const handleDetail = (bill) => {
+    setSelectedBill(bill);
+  };
+
   return (
     <>
-    <Header />
-    <div className="container mt-5" style={{ maxWidth: "800px" }}>
-      <div className="card shadow">
-        <div className="card-header text-center bg-primary text-white">
-          <h3>HÓA ĐƠN THANH TOÁN</h3>
-        </div>
-        <div className="card-body">
-          <div className="mb-4">
-            <h5>Thông tin khách hàng:</h5>
-            <p><strong>Tên:</strong> Nguyễn Văn A</p>
-            <p><strong>Số điện thoại:</strong> 0123456789</p>
-            <p><strong>Địa chỉ:</strong> 123 Đường ABC, Thành phố XYZ</p>
-          </div>
-          <h5 className="mb-3">Chi tiết hóa đơn:</h5>
-          <table className="table table-bordered">
-            <thead className="table-light">
+      <Container>
+        <h4>Quản lý Hoá đơn</h4>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Tên khách hàng</th>
+              <th>Số điện thoại</th>
+              <th>Tổng tiền</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bills.length > 0 ? (
+              bills.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{item.customer_name}</td>
+                  <td>{item.customer_phone}</td>
+                  <td>{formatter.format(item.total)}</td>
+                  <td>
+                    <span className={statusMap[item.status]?.class}>
+                      <i className={statusMap[item.status]?.icon}></i>
+                      {statusMap[item.status]?.text}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="d-flex gap-2">
+                      <Button type="button" variant="danger">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="info"
+                        title="Chi tiết"
+                        onClick={() => handleDetail(item)}
+                      >
+                        <FontAwesomeIcon icon={faCircleInfo} />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
-                <th>#</th>
-                <th>Tên sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
+                <td colSpan="7" className="text-center">
+                  Không có dữ liệu
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>Sản phẩm A</td>
-                <td>2</td>
-                <td>100,000 VND</td>
-                <td>200,000 VND</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Sản phẩm B</td>
-                <td>1</td>
-                <td>150,000 VND</td>
-                <td>150,000 VND</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan="4" className="text-end"><strong>Tổng cộng:</strong></td>
-                <td><strong>350,000 VND</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-          <div className="mt-4">
-            <h5>Ghi chú:</h5>
-            <p>Cảm ơn quý khách đã sử dụng dịch vụ của chúng tôi!</p>
-          </div>
-        </div>
-        <div className="card-footer text-center">
-          <button
-            className="btn btn-primary"
-            onClick={() => window.print()}
-          >
-            In Hóa Đơn
-          </button>
-        </div>
-      </div>
-    </div>
+            )}
+          </tbody>
+        </Table>
+      </Container>
+      {selectedBill && (
+        <BillDetail
+          show={!!selectedBill}
+          billDetail={selectedBill}
+          formatter={formatter}
+          onClose={() => setSelectedBill(null)} // Close detail view
+        />
+      )}
     </>
   );
 }
