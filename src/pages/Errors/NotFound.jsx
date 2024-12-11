@@ -1,4 +1,4 @@
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useAuthenContext from "@/contexts/AuthenContext";
 
@@ -7,7 +7,7 @@ function NotFound() {
   const redirectPath =
     user && Array.isArray(user.roles)
       ? user.roles.includes("Manager")
-        ? "/manager"
+        ? "/danh-sach-lich"
         : "/staff"
       : "/dang-nhap";
 

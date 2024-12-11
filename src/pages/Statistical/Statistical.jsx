@@ -88,6 +88,8 @@ function Statistical() {
     ["Month", "Dataset 1"],
     ...revenueService.map((item) => [item.month, item.revenue]),
   ];
+  console.log(revenueService);
+
   const barDataProduct = [
     ["Month", "Dataset 1"],
     ...revenueProduct.map((item) => [item.month, item.revenue]),
@@ -103,12 +105,6 @@ function Statistical() {
     vAxis: {
       title: "Month",
     },
-  };
-
-  const lineOptions = {
-    title: "Line Chart Example",
-    curveType: "function",
-    legend: { position: "bottom" },
   };
 
   const lineData = [
@@ -135,10 +131,26 @@ function Statistical() {
 
   return (
     <React.Fragment>
-      <div className="baocao-container">
-        <div className="grid-container">
-          <div className="barchart-container col-8">
-            <h3>Doanh thu hàng ngày sản phẩm</h3>
+      <div className="summary-container">
+        <div className="row align-items-center col-12">
+          <div className="box col-2">
+            Doanh thu dịch vụ: {formatter.format(totalBarService)}
+          </div>
+          <div className="box col-2">
+            Doanh thu sản phẩm: {formatter.format(totalBarProduct)}
+          </div>
+          <div className="box col-2">
+            Tổng doanh thu: {formatter.format(totalPieChart)}
+          </div>
+          <div className="box col-2">
+            Lượt truy cập website: {totalLineChartViews}
+          </div>
+        </div>
+      </div>
+      <div className="grid-container">
+        <div className="barchart-container">
+          <div className="barchart">
+            <h3>Doanh thu dịch vụ hàng ngày</h3>
             <Chart
               chartType="Bar"
               data={barDataService}
@@ -147,23 +159,20 @@ function Statistical() {
               height="400px"
             />
           </div>
-          <div className="summary-container col-4">
-            <div className="box">
-              Doanh thu dịch vụ: {formatter.format(totalBarService)}
-            </div>
-            <div className="box">
-              Doanh thu sản phẩm: {formatter.format(totalBarProduct)}
-            </div>
-            <div className="box">
-              Tổng doanh thu: {formatter.format(totalPieChart)}
-            </div>
-            <div className="box">
-              Lượt truy cập website: {totalLineChartViews}
-            </div>
+          <div className="barchart">
+            <h3>Doanh thu sản phẩm hàng ngày </h3>
+            <Chart
+              chartType="Bar"
+              data={barDataService}
+              options={barOptions}
+              width="100%"
+              height="400px"
+            />
           </div>
         </div>
-        <div className="row-container">
-          <div className="border-box col-4">
+
+        <div className="chart-container">
+          <div className="border-box">
             <h3>Tổng doanh thu</h3>
             <Chart
               chartType="PieChart"
@@ -173,22 +182,12 @@ function Statistical() {
               height="400px"
             />
           </div>
-          <div className="border-box col-4">
+          <div className="border-box">
             <h3>Doanh thu dịch vụ </h3>
             <Chart
               chartType="Bar"
               data={barDataProduct}
               options={barOptions}
-              width="100%"
-              height="400px"
-            />
-          </div>
-          <div className="border-box col-4">
-            <h3>Lượng truy cập</h3>
-            <Chart
-              chartType="Line"
-              data={lineData}
-              options={lineOptions}
               width="100%"
               height="400px"
             />

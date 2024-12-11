@@ -26,7 +26,6 @@ export const useAuth = () => {
         `${import.meta.env.VITE_API_URL}/login-manager`,
         { ...data }
       );
-
       if (response.data.check === true) {
         saveAuthInfo(response.data);
         window.notyf.success("Đăng nhập thành công!");
@@ -35,13 +34,9 @@ export const useAuth = () => {
           setToken(response.data.token);
           setExpiry(response.data.expiry);
           setUser(true);
-
-          const targetPath =
-            response.data.role === "manager" ? "/manager" : "/staff";
-
-          navigate(targetPath, {
-            replace: true,
-          });
+          setTimeout(() => {
+            navigate("/danh-sach-lich", { replace: true });
+          }, 2000);
         }, 2000);
       } else {
         window.notyf.error(response.data.message);
@@ -89,7 +84,9 @@ export const useAuth = () => {
         setToken(null);
         setExpiry(null);
         setUser(null);
-        navigate("/dang-nhap", { replace: true });
+        setTimeout(() => {
+          navigate("/dang-nhap", { replace: true });
+        }, 2000);
         window.notyf.success("Đăng xuất thành công!");
       }
     } catch (error) {

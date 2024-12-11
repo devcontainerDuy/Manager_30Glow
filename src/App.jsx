@@ -18,7 +18,7 @@ function App() {
 
   return (
     <Routes>
-      {user && Array.isArray(user.roles) ? (
+      {/* {user && Array.isArray(user.roles) ? (
         user.roles.includes("Manager") ? (
           <Route path="/manager">
             <Route element={<ManagerLayout />}>
@@ -37,6 +37,25 @@ function App() {
         )
       ) : (
         <Route path="/dang-nhap" element={<Login />} />
+      )}
+      <Route path="/not-found" element={<NotFound />} />
+      <Route path="/*" element={<NotFound />} /> */}
+      {user ? (
+        <Route element={<ManagerLayout />}>
+          <Route path="/danh-sach-lich" element={<Manager />} />
+          <Route
+            path="/danh-sach-lich/chi-tiet/:id"
+            element={<Show />}
+            key="manager"
+          />
+          <Route path="/statistical" element={<Statistical />} />
+          <Route path="/bill" element={<Bill />} />
+          <Route path="/staff" element={<Staff />} />
+        </Route>
+      ) : (
+        <>
+          <Route path="/dang-nhap" element={<Login />} />
+        </>
       )}
       <Route path="/not-found" element={<NotFound />} />
       <Route path="/*" element={<NotFound />} />

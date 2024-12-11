@@ -19,7 +19,7 @@ function Header() {
       className="bg-body-tertiary navbar-custom"
     >
       <Container>
-        <Navbar.Brand as={Link} to="/manager">
+        <Navbar.Brand as={Link} to="/danh-sach-lich">
           <img
             src="http://localhost:5173/src/assets/images/logo30GLOW.png"
             alt="Logo"
@@ -29,16 +29,13 @@ function Header() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/manager">
+            <Nav.Link as={Link} to="/danh-sach-lich">
               Trang Chủ
             </Nav.Link>
-            <Nav.Link as={Link} to="/manager/statistical">
+            <Nav.Link as={Link} to="/statistical">
               Thống kê
             </Nav.Link>
-            <Nav.Link as={Link} to="/staff">
-              Thanh Toán
-            </Nav.Link>
-            <Nav.Link as={Link} to="/manager/bill">
+            <Nav.Link as={Link} to="/bill">
               Hóa đơn
             </Nav.Link>
             <Nav.Link onClick={handleLogout} style={{ cursor: "pointer" }}>

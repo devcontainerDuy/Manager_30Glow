@@ -238,73 +238,82 @@ function Index() {
             </Row>
           </Card.Body>
         </Card>
-
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Tên dịch vụ</th>
-              <th>Tên khách hàng</th>
-              <th>Thời gian</th>
-              <th>Số điện thoại</th>
-              <th>Nhân viên</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBookings.length > 0 ? (
-              filteredBookings.map((item, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <span
-                      className="text-break"
-                      title={
-                        item.service &&
-                        item.service.map((item) => item.name).join(", ")
-                      }
-                    >
-                      {item.service &&
-                        item.service.map((item) => item.name).join(", ")}
-                    </span>
-                  </td>
-                  <td>{item.customer?.name}</td>
-                  <td>{item.time}</td>
-                  <td>{item.customer?.phone}</td>
-                  <td>{item.user?.name || "Chưa sắp xếp nhân viên"}</td>
-                  <td>
-                    <span className={statusMap[item.status]?.class}>
-                      <i className={statusMap[item.status]?.icon}></i>{" "}
-                      {statusMap[item.status]?.text}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="d-flex gap-2">
-                      <Button type="button" variant="danger">
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="info"
-                        title="Chi tiết"
-                        onClick={() => handleDetail(item.id)}
+        <div className="table-container">
+          <Table striped bordered hover responsive>
+            {/* <colgroup>
+              <col style={{ width: "5%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "5%" }} />
+            </colgroup> */}
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên dịch vụ</th>
+                <th>Tên khách hàng</th>
+                <th>Thời gian</th>
+                <th>Số điện thoại</th>
+                <th>Nhân viên</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBookings.length > 0 ? (
+                filteredBookings.map((item, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>
+                      <span
+                        className="text-break"
+                        title={item.service
+                          ?.map((item) => item.name)
+                          .join(", ")}
                       >
-                        <FontAwesomeIcon icon={faCircleInfo} />
-                      </Button>
-                    </div>
+                        {item.service?.map((item) => item.name).join(", ")}
+                      </span>
+                    </td>
+                    <td>{item.customer?.name}</td>
+                    <td>{item.time}</td>
+                    <td>{item.customer?.phone}</td>
+                    <td>{item.user?.name || "Chưa sắp xếp nhân viên"}</td>
+                    <td>
+                      <span className={statusMap[item.status]?.class}>
+                        <i className={statusMap[item.status]?.icon}></i>{" "}
+                        {statusMap[item.status]?.text}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="d-flex gap-2">
+                        <Button type="button" variant="danger">
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="info"
+                          title="Chi tiết"
+                          onClick={() => handleDetail(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faCircleInfo} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    Không có dữ liệu
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center">
-                  Không có dữ liệu
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+              )}
+            </tbody>
+          </Table>
+        </div>
       </Container>
 
       <Paginated current={page} total={totalPage} handle={handlePageChange} />
