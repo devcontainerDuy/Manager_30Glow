@@ -26,7 +26,7 @@ const Login = () => {
     <Container fluid className="d-flex align-items-center justify-content-center vh-100">
       <form className="form-signin" onSubmit={handleSubmit}>
         <div className="text-center mb-4">
-          <img src="/src/assets/images/logo30GLOW.png" alt="Logo" className="logo-container" style={{ maxWidth: "100%", height: "auto" }} width={72} height={72} />
+          <img src="assets/images/logo30GLOW.png" alt="Logo" className="logo-container" style={{ maxWidth: "100%", height: "auto" }} width={72} height={72} />
           <h2 className="h3 mb-3 font-weight-normal" style={{ color: "blue" }}>
             HỆ THỐNG QUẢN LÝ
           </h2>
