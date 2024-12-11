@@ -28,12 +28,14 @@ function App() {
         </>
       ) : (
         <>
-              <Route path="/*" element={<Login />} />
+              <Route path="/" element={<Login />} />
           <Route path="/dang-nhap" element={<Login />} />
+          <Route path="*" element={<NotFound />} />
         </>
       )}
       <Route path="/not-found" element={<NotFound />} />
       <Route path="/*" element={<NotFound />} />
+
     </Routes>
   );
 }
