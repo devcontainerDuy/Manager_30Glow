@@ -28,6 +28,7 @@ function App() {
         </>
       ) : (
         <>
+              <Route path="/*" element={<Login />} />
           <Route path="/dang-nhap" element={<Login />} />
         </>
       )}
