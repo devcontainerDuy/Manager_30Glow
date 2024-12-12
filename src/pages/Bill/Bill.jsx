@@ -1,4 +1,3 @@
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -142,7 +141,6 @@ function Bill() {
           onClose={() => setSelectedBill(null)} // Close detail view
         />
       )}
-
     </>
   );
 }

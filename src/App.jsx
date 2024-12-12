@@ -2,12 +2,13 @@ import "./App.css";
 import "./bootstrap";
 import "notyf/notyf.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { Route, Routes } from "react-router-dom";
+import Manager from "@/pages/Manager/Index.jsx";
+import Show from "@/pages/Manager/Show.jsx";
 import Statistical from "@/pages/Statistical/Statistical";
 import Staff from "@/pages/staff/Staff";
 import Login from "@/pages/Auth/Login";
 import Bill from "@/pages/Bill/Bill";
-
 import useAuthenContext from "@/contexts/AuthenContext";
 import NotFound from "@/pages/Errors/NotFound";
 import ManagerLayout from "./layouts/ManagerLayout";
@@ -58,7 +59,6 @@ function App() {
       )}
       <Route path="/not-found" element={<NotFound />} />
       <Route path="/*" element={<NotFound />} />
-
     </Routes>
   );
 }
