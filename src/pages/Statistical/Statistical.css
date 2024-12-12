@@ -1,3 +1,4 @@
+
 body {
     font-family: "Roboto", sans-serif;
     background-color: #f7f9fc;
@@ -29,6 +30,7 @@ h3 {
     justify-content: center;
     align-items: center;
     gap: 5%;
+
 }
 
 .box {
@@ -41,8 +43,10 @@ h3 {
     justify-content: center;
     color: white;
     transition: transform 0.2s, box-shadow 0.2s;
+
     width: 20%;
     height: 80px;
+
 }
 
 .box:nth-child(1) {
@@ -69,6 +73,7 @@ h3 {
     transform: translateY(-5px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
+
 
 .grid-container {
     display: flex;
@@ -186,4 +191,5 @@ h3 {
     .chart-container .border-box {
         flex: 1 1 48%;
     }
+
 }

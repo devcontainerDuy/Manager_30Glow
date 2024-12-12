@@ -1,12 +1,11 @@
 import { Notyf } from "notyf";
-import Echo from "laravel-echo";
-import Pusher from "pusher-js";
 
 window.notyf = new Notyf({
   duration: 3000,
   position: { x: "right", y: "top" },
   dismissible: true,
 });
+
 
 window.pusher = new Pusher("a41649538081bc522756", {
   cluster: "ap1",
@@ -31,3 +30,4 @@ window.Echo = new Echo({
   enabledTransports: ["ws", "wss"],
   encrypted: true,
 });
+

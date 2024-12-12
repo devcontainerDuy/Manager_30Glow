@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import "notyf/notyf.min.css";
 import { Notyf } from "notyf";
@@ -63,6 +64,7 @@ function Staff() {
     });
   }, []);
 
+
   const notyf = new Notyf({
     duration: 1000,
     position: {
@@ -108,7 +110,9 @@ function Staff() {
 
   return (
     <>
+
       <Header />
+
       {open && (
         <div
           style={{
@@ -123,9 +127,11 @@ function Staff() {
             padding: "16px",
           }}
         >
+
           <h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
             Ghi chú hủy
           </h2>
+
           <input
             type="text"
             placeholder="Ghi chú hủy ..."
@@ -162,6 +168,7 @@ function Staff() {
       )}
 
       <div className="container">
+
         <h4>Danh sách lịch đặt</h4>
         <div className="container">
           <div className="bg-white card-body">

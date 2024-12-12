@@ -77,6 +77,7 @@ function Statistical() {
   const pieData = [
     ["Task", "Hours per Day"],
     ...totalRevenue.map((item) => [item.name, item.value.revenue_year]),
+
   ];
 
   const pieOptions = {
@@ -95,6 +96,7 @@ function Statistical() {
     ...revenueProduct.map((item) => [item.month, item.revenue]),
   ];
 
+
   const barOptions = {
     title: "Monthly Data",
     chartArea: { width: "50%" },
@@ -107,6 +109,8 @@ function Statistical() {
     },
   };
 
+
+
   const lineData = [
     ["Month", "Dataset 1"],
     ["January", 65],
@@ -118,12 +122,14 @@ function Statistical() {
     ["July", 40],
   ];
 
+
   const totalBarService = barDataService
     .slice(1)
     .reduce((sum, row) => sum + row[1], 0);
   const totalBarProduct = barDataProduct
     .slice(1)
     .reduce((sum, row) => sum + row[1], 0);
+
   const totalPieChart = pieData.slice(1).reduce((sum, row) => sum + row[1], 0);
   const totalLineChartViews = lineData
     .slice(1)
@@ -131,6 +137,7 @@ function Statistical() {
 
   return (
     <React.Fragment>
+
       <div className="summary-container">
         <div className="row align-items-center col-12">
           <div className="box col-2">
@@ -151,6 +158,7 @@ function Statistical() {
         <div className="barchart-container">
           <div className="barchart">
             <h3>Doanh thu dịch vụ hàng ngày</h3>
+
             <Chart
               chartType="Bar"
               data={barDataService}
@@ -159,6 +167,7 @@ function Statistical() {
               height="400px"
             />
           </div>
+
           <div className="barchart">
             <h3>Doanh thu sản phẩm hàng ngày </h3>
             <Chart
@@ -174,6 +183,7 @@ function Statistical() {
         <div className="chart-container">
           <div className="border-box">
             <h3>Tổng doanh thu</h3>
+
             <Chart
               chartType="PieChart"
               data={pieData}
@@ -182,7 +192,9 @@ function Statistical() {
               height="400px"
             />
           </div>
+
           <div className="border-box">
+
             <h3>Doanh thu dịch vụ </h3>
             <Chart
               chartType="Bar"

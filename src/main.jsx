@@ -5,6 +5,7 @@ import App from "@/App.jsx";
 import { AuthenProvider } from "@/contexts/AuthenContext.jsx";
 
 createRoot(document.getElementById("root")).render(
+
   <BrowserRouter>
     {/* <Provider store={store}> */}
     <AuthenProvider>
@@ -12,4 +13,5 @@ createRoot(document.getElementById("root")).render(
     </AuthenProvider>
     {/* </Provider> */}
   </BrowserRouter>
+
 );

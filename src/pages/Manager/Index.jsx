@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./index.css";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -86,15 +87,18 @@ function Index() {
         );
         if (res.data.check === true) {
           setBookings(res.data.data.data);
+
           setTotalPage(res.data.data.last_page);
           setPage(res.data.data.current_page);
         }
       } catch (err) {
+
         if (err.response.message === "Unauthorized") {
           logout();
         }
       }
     };
+
 
     const fetchService = async () => {
       try {
@@ -250,19 +254,23 @@ function Index() {
               <col style={{ width: "10%" }} />
               <col style={{ width: "5%" }} />
             </colgroup> */}
+
             <thead>
               <tr>
                 <th>STT</th>
                 <th>Tên dịch vụ</th>
                 <th>Tên khách hàng</th>
                 <th>Thời gian</th>
+
                 <th>Số điện thoại</th>
+
                 <th>Nhân viên</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
+
               {filteredBookings.length > 0 ? (
                 filteredBookings.map((item, index) => (
                   <tr key={index}>
