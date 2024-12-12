@@ -22,7 +22,7 @@ export const useAuth = () => {
 
   const login = async ({ ...data }) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login-manager`, { ...data });
+
       if (response.data.check === true) {
         saveAuthInfo(response.data);
         window.notyf.success("Đăng nhập thành công!");
@@ -31,7 +31,11 @@ export const useAuth = () => {
           setToken(response.data.token);
           setExpiry(response.data.expiry);
           setUser(true);
-          navigate("/manager", { replace: true });
+
+          setTimeout(() => {
+            navigate("/danh-sach-lich", { replace: true });
+          }, 2000);
+
         }, 2000);
       } else {
         window.notyf.error(response.data.message);
@@ -41,11 +45,54 @@ export const useAuth = () => {
     }
   };
 
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/manager/infomation`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUser(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) getUser();
+  }, [token]);
+
   const logout = async () => {
-    setTimeout(() => {
-      clearAuthInfo();
-      navigate("/dang-nhap", { replace: true });
-    }, 2000);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/logout-manager`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.check === true) {
+        clearAuthInfo();
+        setUid(null);
+        setToken(null);
+        setExpiry(null);
+        setUser(null);
+        setTimeout(() => {
+          navigate("/dang-nhap", { replace: true });
+        }, 2000);
+        window.notyf.success("Đăng xuất thành công!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
   };
 
   useEffect(() => {
@@ -53,9 +100,13 @@ export const useAuth = () => {
       if (token && expiry) {
         const currentTimestamp = Math.floor(new Date().getTime() / 1000);
         if (currentTimestamp >= expiry) {
-          localStorage.removeItem("uid");
-          localStorage.removeItem("token");
-          localStorage.removeItem("expiry");
+
+          logout();
+          setUid(null);
+          setToken(null);
+          setExpiry(null);
+          setUser(null);
+
         }
       }
     };

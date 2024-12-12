@@ -1,23 +1,101 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../layouts/Header";
 import { Chart } from "react-google-charts";
 import "./Statistical.css";
-import { getRevenueProduct, getRevenueService } from "../../services/RevenueManager";
+import useAuthenContext from "@/contexts/AuthenContext";
+import axios from "axios";
 
 function Statistical() {
+  const { token } = useAuthenContext();
+  const [revenueService, setRevenueService] = useState([]);
+  const [revenueProduct, setRevenueProduct] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState([]);
+
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+
+  useEffect(() => {
+    const fetchRevenueService = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_API_URL + "/revenue/service",
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+        setRevenueService(response.data.data.monthly_revenue);
+        return response.data.data;
+      } catch (error) {
+        console.error("Error fetching revenue:", error);
+      }
+    };
+    const fetchRevenueProduct = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_API_URL + "/revenue/products",
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+        setRevenueProduct(response.data.data.monthly_revenue);
+        return response.data.data;
+      } catch (error) {
+        console.error("Error fetching revenue:", error);
+      }
+    };
+
+    fetchRevenueProduct();
+    fetchRevenueService();
+
+    const fetchTotalRevenue = async () => {
+      const [serviceRevenue, productRevenue] = await Promise.all([
+        fetchRevenueService(),
+        fetchRevenueProduct(),
+      ]);
+
+      const revenueArray = [
+        serviceRevenue !== null && {
+          name: "Revenue Service",
+          value: serviceRevenue,
+        },
+        productRevenue !== null && {
+          name: "Revenue Product",
+          value: productRevenue,
+        },
+      ].filter((item) => item);
+
+      setTotalRevenue(revenueArray);
+    };
+    fetchTotalRevenue();
+  }, [token]);
+
   const pieData = [
     ["Task", "Hours per Day"],
-    ["Work", 11],
-    ["Eat", 2],
-    ["Commute", 2],
-    ["Watch TV", 2],
-    ["Sleep", 7],
+    ...totalRevenue.map((item) => [item.name, item.value.revenue_year]),
+
   ];
 
   const pieOptions = {
     title: "My Daily Activities",
     pieHole: 0.4,
   };
+
+  const barDataService = [
+    ["Month", "Dataset 1"],
+    ...revenueService.map((item) => [item.month, item.revenue]),
+  ];
+  console.log(revenueService);
+
+  const barDataProduct = [
+    ["Month", "Dataset 1"],
+    ...revenueProduct.map((item) => [item.month, item.revenue]),
+  ];
+
 
   const barOptions = {
     title: "Monthly Data",
@@ -31,11 +109,7 @@ function Statistical() {
     },
   };
 
-  const lineOptions = {
-    title: "Line Chart Example",
-    curveType: "function",
-    legend: { position: "bottom" },
-  };
+
 
   const lineData = [
     ["Month", "Dataset 1"],
@@ -48,45 +122,14 @@ function Statistical() {
     ["July", 40],
   ];
 
-  const [revenueService, setRevenueService] = useState([]);
-  const [revenueProduct, setRevenueProduct] = useState([]);
-  useEffect(() => {
-    const fetchRevenueService = async () => {
-      try {
-        const response = await getRevenueService();
-        setRevenueService(response.data.monthly_revenue);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    const fetchRevenueProduct = async () => {
-      try {
-        const response = await getRevenueProduct();
-        setRevenueProduct(response.data.monthly_revenue);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    fetchRevenueService();
-    fetchRevenueProduct();
-  }, []);
 
-  const barDataService = [
-      ["Month", "Dataset 1"],
-      ...revenueService.map((service) => 
-          [service.month, service.revenue],
-        )
-    ]
+  const totalBarService = barDataService
+    .slice(1)
+    .reduce((sum, row) => sum + row[1], 0);
+  const totalBarProduct = barDataProduct
+    .slice(1)
+    .reduce((sum, row) => sum + row[1], 0);
 
-  const barDataProduct = [
-      ["Month", "Dataset 1"],
-      ...revenueProduct.map((product) => 
-          [product.month, product.revenue],
-        )
-    ]
-
-  const totalBarService = barDataService.slice(1).reduce((sum, row) => sum + row[1], 0);
-  const totalBarProduct = barDataProduct.slice(1).reduce((sum, row) => sum + row[1], 0);
   const totalPieChart = pieData.slice(1).reduce((sum, row) => sum + row[1], 0);
   const totalLineChartViews = lineData
     .slice(1)
@@ -94,11 +137,28 @@ function Statistical() {
 
   return (
     <React.Fragment>
-      <Header />
-      <div className="baocao-container">
-        <div className="grid-container">
-          <div className="barchart-container col-8">
-            <h3>Doanh thu dịch vụ hàng tháng</h3>
+
+      <div className="summary-container">
+        <div className="row align-items-center col-12">
+          <div className="box col-2">
+            Doanh thu dịch vụ: {formatter.format(totalBarService)}
+          </div>
+          <div className="box col-2">
+            Doanh thu sản phẩm: {formatter.format(totalBarProduct)}
+          </div>
+          <div className="box col-2">
+            Tổng doanh thu: {formatter.format(totalPieChart)}
+          </div>
+          <div className="box col-2">
+            Lượt truy cập website: {totalLineChartViews}
+          </div>
+        </div>
+      </div>
+      <div className="grid-container">
+        <div className="barchart-container">
+          <div className="barchart">
+            <h3>Doanh thu dịch vụ hàng ngày</h3>
+
             <Chart
               chartType="Bar"
               data={barDataService}
@@ -107,18 +167,23 @@ function Statistical() {
               height="400px"
             />
           </div>
-          <div className="summary-container col-4">
-            <div className="box">Doanh thu dịch vụ: {totalBarService}</div>
-            <div className="box">Doanh thu sản phẩm: {totalBarProduct}</div>
-            <div className="box">Doanh thu theo giờ: {totalPieChart}</div>
-            <div className="box">
-              Lượt truy cập website: {totalLineChartViews}
-            </div>
+
+          <div className="barchart">
+            <h3>Doanh thu sản phẩm hàng ngày </h3>
+            <Chart
+              chartType="Bar"
+              data={barDataService}
+              options={barOptions}
+              width="100%"
+              height="400px"
+            />
           </div>
         </div>
-        <div className="row-container">
-          <div className="border-box col-4">
-            <h3>Doanh thu theo giờ</h3>
+
+        <div className="chart-container">
+          <div className="border-box">
+            <h3>Tổng doanh thu</h3>
+
             <Chart
               chartType="PieChart"
               data={pieData}
@@ -127,22 +192,14 @@ function Statistical() {
               height="400px"
             />
           </div>
-          <div className="border-box col-4">
+
+          <div className="border-box">
+
             <h3>Doanh thu dịch vụ </h3>
             <Chart
               chartType="Bar"
               data={barDataProduct}
               options={barOptions}
-              width="100%"
-              height="400px"
-            />
-          </div>
-          <div className="border-box col-4">
-            <h3>Lượng truy cập</h3>
-            <Chart
-              chartType="Line"
-              data={lineData}
-              options={lineOptions}
               width="100%"
               height="400px"
             />
