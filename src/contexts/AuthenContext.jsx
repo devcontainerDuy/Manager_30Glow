@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { createContext, useContext } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 export const AuthenContext = createContext({});
 
