@@ -55,7 +55,7 @@ function Bill() {
     const fetchBills = async () => {
       try {
         const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/bills/list",
+          import.meta.env.VITE_API_URL + "/bill-services/create",
           {
             headers: {
               Authorization: "Bearer " + token,

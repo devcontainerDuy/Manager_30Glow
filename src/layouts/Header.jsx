@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import "./Header.css";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import useAuthenContext from "@/contexts/AuthenContext";
-
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 function Header() {
-  const { logout, user } = useAuthenContext();
+  const { logout, user, token } = useAuthenContext();
+
+  console.log("token", token);
 
   const handleLogout = () => {
     if (window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
@@ -35,25 +38,40 @@ function Header() {
             <Nav.Link as={Link} to="/statistical">
               Thống kê
             </Nav.Link>
+            <Nav.Link as={Link} to="/payment">
+              Thanh toán
+            </Nav.Link>
             <Nav.Link as={Link} to="/bill">
               Hóa đơn
             </Nav.Link>
-            <Nav.Link onClick={handleLogout} style={{ cursor: "pointer" }}>
-              Đăng xuất
-            </Nav.Link>
           </Nav>
-          <Nav>
-            <div className="navbar-end d-flex align-items-center">
+
+          <Dropdown>
+            <Dropdown.Toggle
+              id="dropdown-basic"
+              className="p-0 border-0 bg-transparent"
+              style={{ boxShadow: "none", background: "none" }}
+            >
               <span className="navbar-text">
                 Xin chào: <strong>{user.name}</strong>
               </span>
               <img
                 src="https://preview.redd.it/thoughts-on-foden-v0-mfm3d8apqdoc1.jpeg?auto=webp&s=d1787f3de4f4f1f1f99db6f349713bc66cc53a40"
                 alt="Avatar"
-                className="avatar"
+                style={{ width: "40px", height: "40px", borderRadius: "50%" }}
               />
-            </div>
-          </Nav>
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item href="#/action-1">Thông tin cá nhân</Dropdown.Item>
+              <Dropdown.Item
+                onClick={handleLogout}
+                style={{ cursor: "pointer" }}
+              >
+                Đăng xuất
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </Navbar.Collapse>
       </Container>
     </Navbar>
