@@ -79,7 +79,7 @@ export const useAuth = () => {
         setExpiry(null);
         setUser(null);
         setTimeout(() => {
-          navigate("/dang-nhap", { replace: true });
+          navigate("/", { replace: true });
         }, 2000);
         window.notyf.success("Đăng xuất thành công!");
       }
