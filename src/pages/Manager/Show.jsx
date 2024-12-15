@@ -14,17 +14,18 @@ import useAuthenContext from "@/contexts/AuthenContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import "./index.css";
+import Payment from "../Payment/Payment";
 
 function Show() {
   const { id } = useParams();
-  const { token, roles } = useAuthenContext();
+  const { token } = useAuthenContext();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [staff, setStaff] = useState([]);
   const [status, setStatus] = useState(0);
   const [userId, setUserId] = useState(null);
+  const [payment, setPayment] = useState(null);
   const [note, setNote] = useState("");
-  console.log("Data", roles);
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -121,6 +122,11 @@ function Show() {
     fetchData();
     fetchUser();
   }, [id, token]);
+
+  const handleOpenPayment = (data) => {
+    setPayment(data);
+    console.log(data);
+  };
 
   return (
     <Container>
@@ -257,6 +263,9 @@ function Show() {
                             </tr>
                           </tfoot>
                         </Table>
+                        <Button onClick={() => handleOpenPayment(data)}>
+                          Thanh toán
+                        </Button>
                       </Card.Body>
                     </Card>
                   </Col>
@@ -369,6 +378,13 @@ function Show() {
         </Col>
         {/* End DataGrid */}
       </Row>
+      {payment && (
+        <Payment
+          show={!!payment}
+          paymentBill={payment}
+          onClose={() => setPayment(null)}
+        />
+      )}
     </Container>
   );
 }

@@ -12,7 +12,6 @@ import Bill from "@/pages/Bill/Bill";
 import useAuthenContext from "@/contexts/AuthenContext";
 import NotFound from "@/pages/Errors/NotFound";
 import ManagerLayout from "./layouts/ManagerLayout";
-import Payment from "./pages/Payment/Payment";
 
 function App() {
   const { user } = useAuthenContext();
@@ -30,7 +29,6 @@ function App() {
           />
           <Route path="/statistical" element={<Statistical />} />
           <Route path="/bill" element={<Bill />} />
-          <Route path="/payment" element={<Payment />} />
           <Route path="/staff" element={<Staff />} />
         </Route>
       ) : (

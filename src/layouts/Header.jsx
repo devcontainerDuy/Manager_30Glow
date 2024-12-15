@@ -38,9 +38,6 @@ function Header() {
             <Nav.Link as={Link} to="/statistical">
               Thống kê
             </Nav.Link>
-            <Nav.Link as={Link} to="/payment">
-              Thanh toán
-            </Nav.Link>
             <Nav.Link as={Link} to="/bill">
               Hóa đơn
             </Nav.Link>
