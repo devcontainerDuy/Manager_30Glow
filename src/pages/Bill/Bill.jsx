@@ -5,45 +5,35 @@ import { Button, Container, Table } from "react-bootstrap";
 import useAuthenContext from "@/contexts/AuthenContext";
 import { faCircleInfo, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import BillDetail from "../BillDetail/BillDetail";
-// import PropTypes from "prop-types";
 
 function Bill() {
   const { token } = useAuthenContext();
   const [bills, setBills] = useState([]);
   const [selectedBill, setSelectedBill] = useState(null);
 
+  // Định dạng tiền tệ
   const formatter = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   });
 
+  // Map trạng thái hóa đơn
   const statusMap = {
     0: {
-      text: "Đang chờ xếp nhân viên",
+      text: "Đang chờ xử lý",
       class: "text-warning",
       icon: "bi bi-clock",
     },
     1: {
-      text: "Đã xếp nhân viên",
+      text: "Đã xác nhận",
       class: "text-primary",
       icon: "bi bi-person-fill-check",
     },
     2: {
-      text: "Đang thực hiện",
-      class: "text-info",
-      icon: "bi bi-chat-right-dots-fill",
+      text: "Thất bại",
+      class: "text-danger",
+      icon: "bi bi-x-circle",
     },
-    3: {
-      text: "Thành công",
-      class: "text-success",
-      icon: "bi bi-check-circle-fill",
-    },
-    4: {
-      text: "Đã thanh toán",
-      class: "text-success",
-      icon: "bi bi-clipboard2-check-fill",
-    },
-    5: { text: "Thất bại", class: "text-danger", icon: "bi bi-x-circle" },
     default: {
       text: "Chưa xác định",
       class: "text-muted",
@@ -51,28 +41,31 @@ function Bill() {
     },
   };
 
+  // Lấy dữ liệu hóa đơn từ API
   useEffect(() => {
     const fetchBills = async () => {
       try {
         const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/bill-services/create",
+          `${import.meta.env.VITE_API_URL}/bill-services/create`,
           {
             headers: {
               Authorization: "Bearer " + token,
             },
           }
         );
+        console.log("API response:", res.data); // Log dữ liệu trả về
         if (res.data.check === true) {
           setBills(res.data.data);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching bills:", error);
       }
     };
 
     fetchBills();
   }, [token]);
 
+  // Xử lý khi nhấn nút xem chi tiết
   const handleDetail = (bill) => {
     setSelectedBill(bill);
   };
@@ -97,20 +90,21 @@ function Bill() {
               bills.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{item.customer_name}</td>
-                  <td>{item.customer_phone}</td>
-                  <td>{formatter.format(item.total)}</td>
+                  <td>{item.customer?.name || "Không có"}</td> 
+                  <td>{item.customer?.phone || "Không có"}</td> 
+                  <td>
+                    {item.total ? formatter.format(item.total) : "N/A"}{" "}
+                    
+                  </td>
                   <td>
                     <span className={statusMap[item.status]?.class}>
-                      <i className={statusMap[item.status]?.icon}></i>
-                      {statusMap[item.status]?.text}
+                      <i className={statusMap[item.status]?.icon}></i>{" "}
+                      {statusMap[item.status]?.text || "Chưa xác định"}
                     </span>
                   </td>
                   <td>
                     <div className="d-flex gap-2">
-                      <Button type="button" variant="danger">
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </Button>
+                    
                       <Button
                         type="button"
                         variant="info"
@@ -125,7 +119,7 @@ function Bill() {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center">
+                <td colSpan="6" className="text-center">
                   Không có dữ liệu
                 </td>
               </tr>
@@ -138,7 +132,7 @@ function Bill() {
           show={!!selectedBill}
           billDetail={selectedBill}
           formatter={formatter}
-          onClose={() => setSelectedBill(null)} // Close detail view
+          onClose={() => setSelectedBill(null)} // Đóng chi tiết hóa đơn
         />
       )}
     </>

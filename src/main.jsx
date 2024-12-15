@@ -6,11 +6,13 @@ import App from "@/App.jsx";
 import { AuthenProvider } from "@/contexts/AuthenContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    {/* <Provider store={store}> */}
-    <AuthenProvider>
-      <App />
-    </AuthenProvider>
-    {/* </Provider> */}
-  </BrowserRouter>
+  <StrictMode>
+    <BrowserRouter>
+      {/* <Provider store={store}> */}
+      <AuthenProvider>
+        <App />
+      </AuthenProvider>
+      {/* </Provider> */}
+    </BrowserRouter>
+  </StrictMode>
 );

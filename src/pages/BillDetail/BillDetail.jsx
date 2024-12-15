@@ -14,13 +14,10 @@ function BillDetail({ show, billDetail, formatter, onClose }) {
               <h4 className="mb-3 text-center fw-bold">Thông tin khách hàng</h4>
               <div>
                 <p>
-                  <strong>Tên:</strong> {billDetail.customer_name}
+                  <strong>Tên:</strong> {billDetail.customer?.name || "Không rõ"}
                 </p>
                 <p>
-                  <strong>Số điện thoại:</strong> {billDetail.customer_phone}
-                </p>
-                <p>
-                  <strong>Địa chỉ:</strong> {billDetail.address}
+                  <strong>Số điện thoại:</strong> {billDetail.customer?.phone || "Không rõ"}
                 </p>
               </div>
             </div>
@@ -29,29 +26,23 @@ function BillDetail({ show, billDetail, formatter, onClose }) {
               <thead className="table-light">
                 <tr>
                   <th>#</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Số lượng</th>
+                  <th>Tên dịch vụ</th>
                   <th>Đơn giá</th>
-                  <th>Thành tiền</th>
                 </tr>
               </thead>
               <tbody>
-                {billDetail.details &&
-                  billDetail.details.map((item, index) => (
+                {billDetail.service &&
+                  billDetail.service.map((item, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>{item.product_name}</td>
-                      <td>{item.quantity}</td>
+                      <td>{item.name}</td>
                       <td>{formatter.format(item.unit_price)}</td>
-                      <td>
-                        {formatter.format(item.unit_price * item.quantity)}
-                      </td>
                     </tr>
                   ))}
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan="4" className="text-end">
+                  <td colSpan="2" className="text-end">
                     <strong>Tổng cộng:</strong>
                   </td>
                   <td>{formatter.format(billDetail.total)}</td>
@@ -69,20 +60,21 @@ function BillDetail({ show, billDetail, formatter, onClose }) {
     </>
   );
 }
+
 BillDetail.propTypes = {
   show: PropTypes.bool.isRequired,
   billDetail: PropTypes.shape({
-    customer_name: PropTypes.string.isRequired,
-    customer_phone: PropTypes.string.isRequired,
-    address: PropTypes.string,
-    details: PropTypes.arrayOf(
+    customer: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      phone: PropTypes.string,
+    }).isRequired,
+    service: PropTypes.arrayOf(
       PropTypes.shape({
-        product_name: PropTypes.string.isRequired,
-        quantity: PropTypes.number.isRequired,
-        unit_price: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        unit_price: PropTypes.string.isRequired,
       })
     ).isRequired,
-    total: PropTypes.number.isRequired,
+    total: PropTypes.string.isRequired,
   }).isRequired,
   formatter: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
