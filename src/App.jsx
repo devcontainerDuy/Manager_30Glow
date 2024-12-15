@@ -11,6 +11,7 @@ import Login from "@/pages/Auth/Login";
 import Bill from "@/pages/Bill/Bill";
 import useAuthenContext from "@/contexts/AuthenContext";
 import NotFound from "@/pages/Errors/NotFound";
+import ManagerLayout from "./layouts/ManagerLayout";
 
 function App() {
   const { user } = useAuthenContext();
@@ -19,19 +20,24 @@ function App() {
   return (
     <Routes>
       {user ? (
-        <>
+        <Route element={<ManagerLayout />}>
           <Route path="/danh-sach-lich" element={<Manager />} />
-          <Route path="/danh-sach-lich/chi-tiet/:id" element={<Show />} key="manager" />
+          <Route
+            path="/danh-sach-lich/chi-tiet/:id"
+            element={<Show />}
+            key="manager"
+          />
           <Route path="/statistical" element={<Statistical />} />
           <Route path="/bill" element={<Bill />} />
           <Route path="/staff" element={<Staff />} />
-        </>
+        </Route>
       ) : (
         <>
-          <Route path="/" element={<Login />} />
-          <Route path="/*" element={<NotFound />} />;
+          <Route path="/dang-nhap" element={<Login />} />
         </>
       )}
+      <Route path="/not-found" element={<NotFound />} />
+      <Route path="/*" element={<NotFound />} />
     </Routes>
   );
 }
