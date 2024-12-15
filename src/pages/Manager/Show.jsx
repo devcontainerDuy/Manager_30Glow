@@ -13,17 +13,18 @@ import axios from "axios";
 import useAuthenContext from "@/contexts/AuthenContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import "./index.css";
 
 function Show() {
   const { id } = useParams();
-  const { token } = useAuthenContext();
+  const { token, roles } = useAuthenContext();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [staff, setStaff] = useState([]);
   const [status, setStatus] = useState(0);
   const [userId, setUserId] = useState(null);
   const [note, setNote] = useState("");
-  console.log("Data", data);
+  console.log("Data", roles);
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -38,7 +39,6 @@ function Show() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("note", note);
 
     if (status === 5 && note === "") {
       window.notyf.error("Vui lòng nhập ghi chú");
@@ -145,7 +145,7 @@ function Show() {
                           {/* Ngày đặt */}
                           <Col md={6}>
                             <Row className="column-gap-1">
-                              <Col xs={8}>
+                              <Col xs={14}>
                                 <Form.Group className="mb-3" controlId="status">
                                   <Form.Label>Trạng thái</Form.Label>
                                   <Form.Select
@@ -164,18 +164,6 @@ function Show() {
                                     <option value={5}>Lịch đã hủy</option>
                                   </Form.Select>
                                 </Form.Group>
-                              </Col>
-                              <Col className="text-start my-auto">
-                                <div className="pt-2">
-                                  <Button
-                                    variant="primary"
-                                    size="md"
-                                    type="button"
-                                    onClick={handleSubmit}
-                                  >
-                                    <FontAwesomeIcon icon={faFloppyDisk} />
-                                  </Button>
-                                </div>
                               </Col>
                             </Row>
                           </Col>
@@ -360,6 +348,21 @@ function Show() {
                     </Card>
                   </Col>
                 </Row>
+              </Col>
+              <Col className="d-flex justify-content-end my-auto">
+                <div className="m-2 ">
+                  <Button
+                    placeholder="Lưu lại"
+                    variant="primary"
+                    size="md"
+                    type="button"
+                    onClick={handleSubmit}
+                  >
+                    {" "}
+                    <span>Lưu lại </span>
+                    <FontAwesomeIcon icon={faFloppyDisk} />
+                  </Button>
+                </div>
               </Col>
             </Row>
           </Form>

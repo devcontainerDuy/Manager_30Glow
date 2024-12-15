@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
-import "./Statistical.css";
+
 import useAuthenContext from "@/contexts/AuthenContext";
 import axios from "axios";
 
@@ -32,6 +32,7 @@ function Statistical() {
         console.error("Error fetching revenue:", error);
       }
     };
+
     const fetchRevenueProduct = async () => {
       try {
         const response = await axios.get(
@@ -60,11 +61,11 @@ function Statistical() {
 
       const revenueArray = [
         serviceRevenue !== null && {
-          name: "Revenue Service",
+          name: "Dịch vụ",
           value: serviceRevenue,
         },
         productRevenue !== null && {
-          name: "Revenue Product",
+          name: "Sản phẩm",
           value: productRevenue,
         },
       ].filter((item) => item);
@@ -80,43 +81,30 @@ function Statistical() {
   ];
 
   const pieOptions = {
-    title: "My Daily Activities",
     pieHole: 0.4,
   };
 
   const barDataService = [
-    ["Month", "Dataset 1"],
+    ["Tháng", "Doanh thu"],
     ...revenueService.map((item) => [item.month, item.revenue]),
   ];
-  console.log(revenueService);
 
   const barDataProduct = [
-    ["Month", "Dataset 1"],
+    ["Tháng", "Doanh thu"],
     ...revenueProduct.map((item) => [item.month, item.revenue]),
   ];
 
   const barOptions = {
-    title: "Monthly Data",
-    chartArea: { width: "50%" },
+    title: "Doanh thu hàng tháng",
+    chartArea: { width: "70%" },
     hAxis: {
-      title: "Total",
+      title: "Doanh thu",
       minValue: 0,
     },
     vAxis: {
-      title: "Month",
+      title: "Tháng",
     },
   };
-
-  const lineData = [
-    ["Month", "Dataset 1"],
-    ["January", 65],
-    ["February", 59],
-    ["March", 80],
-    ["April", 81],
-    ["May", 56],
-    ["June", 55],
-    ["July", 40],
-  ];
 
   const totalBarService = barDataService
     .slice(1)
@@ -125,72 +113,78 @@ function Statistical() {
     .slice(1)
     .reduce((sum, row) => sum + row[1], 0);
   const totalPieChart = pieData.slice(1).reduce((sum, row) => sum + row[1], 0);
-  const totalLineChartViews = lineData
-    .slice(1)
-    .reduce((sum, row) => sum + row[1], 0);
 
   return (
     <React.Fragment>
-      <div className="summary-container">
-        <div className="row align-items-center col-12">
-          <div className="box col-2">
-            Doanh thu dịch vụ: {formatter.format(totalBarService)}
+      <div className="container mt-4">
+        <div className="row text-center g-4">
+          <div className="col-lg-4 col-md-6">
+            <div className="summary-box p-4 bg-light rounded shadow">
+              <h5>Doanh thu dịch vụ</h5>
+              <p className="text-primary fs-5 fw-bold">
+                {formatter.format(totalBarService)}
+              </p>
+            </div>
           </div>
-          <div className="box col-2">
-            Doanh thu sản phẩm: {formatter.format(totalBarProduct)}
+          <div className="col-lg-4 col-md-6">
+            <div className="summary-box p-4 bg-light rounded shadow">
+              <h5>Doanh thu sản phẩm</h5>
+              <p className="text-success fs-5 fw-bold">
+                {formatter.format(totalBarProduct)}
+              </p>
+            </div>
           </div>
-          <div className="box col-2">
-            Tổng doanh thu: {formatter.format(totalPieChart)}
-          </div>
-          <div className="box col-2">
-            Lượt truy cập website: {totalLineChartViews}
+          <div className="col-lg-4 col-md-12">
+            <div className="summary-box p-4 bg-light rounded shadow">
+              <h5>Tổng doanh thu</h5>
+              <p className="text-danger fs-5 fw-bold">
+                {formatter.format(totalPieChart)}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <div className="grid-container">
-        <div className="barchart-container">
-          <div className="barchart">
-            <h3>Doanh thu dịch vụ hàng ngày</h3>
-            <Chart
-              chartType="Bar"
-              data={barDataService}
-              options={barOptions}
-              width="100%"
-              height="400px"
-            />
+
+      <div className="container mt-4">
+        <div className="row g-4">
+          <div className="col-lg-6">
+            <div className="chart-box bg-white p-4 rounded shadow">
+              <h5>Doanh thu dịch vụ hằng tháng</h5>
+              <Chart
+                chartType="Bar"
+                data={barDataService}
+                options={barOptions}
+                width="100%"
+                height="300px"
+              />
+            </div>
           </div>
-          <div className="barchart">
-            <h3>Doanh thu sản phẩm hàng ngày </h3>
-            <Chart
-              chartType="Bar"
-              data={barDataService}
-              options={barOptions}
-              width="100%"
-              height="400px"
-            />
+          <div className="col-lg-6">
+            <div className="chart-box bg-white p-4 rounded shadow">
+              <h5>So sánh doanh thu</h5>
+              <Chart
+                chartType="PieChart"
+                data={pieData}
+                options={pieOptions}
+                width="100%"
+                height="300px"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="chart-container">
-          <div className="border-box">
-            <h3>Tổng doanh thu</h3>
-            <Chart
-              chartType="PieChart"
-              data={pieData}
-              options={pieOptions}
-              width="100%"
-              height="400px"
-            />
-          </div>
-          <div className="border-box">
-            <h3>Doanh thu dịch vụ </h3>
-            <Chart
-              chartType="Bar"
-              data={barDataProduct}
-              options={barOptions}
-              width="100%"
-              height="400px"
-            />
+        <div className="row g-4 mt-4">
+          <div className="col-lg-6 mx-auto">
+            <div className="chart-box bg-white p-4 rounded shadow">
+              <h5>Doanh thu sản phẩm hằng tháng</h5>
+              <Chart
+                chartType="Bar"
+                data={barDataProduct}
+                options={barOptions}
+                width="100%"
+                height="300px"
+              />
+            </div>
           </div>
         </div>
       </div>
