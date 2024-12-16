@@ -129,6 +129,7 @@ function Show() {
   };
 
   return (
+    <>
     <Container>
       <Row>
         <Col xs="12">
@@ -263,7 +264,10 @@ function Show() {
                             </tr>
                           </tfoot>
                         </Table>
-                        <Button onClick={() => handleOpenPayment(data)}>
+                        <Button
+                          className="mt-3"
+                          onClick={() => handleOpenPayment(data)}
+                        >
                           Thanh toán
                         </Button>
                       </Card.Body>
@@ -357,21 +361,20 @@ function Show() {
                     </Card>
                   </Col>
                 </Row>
-              </Col>
-              <Col className="d-flex justify-content-end my-auto">
-                <div className="m-2 ">
-                  <Button
-                    placeholder="Lưu lại"
-                    variant="primary"
-                    size="md"
-                    type="button"
-                    onClick={handleSubmit}
-                  >
-                    {" "}
-                    <span>Lưu lại </span>
-                    <FontAwesomeIcon icon={faFloppyDisk} />
-                  </Button>
-                </div>
+                <Col className="col-12 m-2 mt-4 me-5 d-flex justify-content-end ">
+                  <div className="m-2">
+                    <Button
+                      placeholder="Lưu lại"
+                      variant="primary"
+                      size="md"
+                      type="button"
+                      onClick={handleSubmit}
+                    >
+                      <span>Lưu lại </span>
+                      <FontAwesomeIcon icon={faFloppyDisk} />
+                    </Button>
+                  </div>
+                </Col>
               </Col>
             </Row>
           </Form>
@@ -385,7 +388,11 @@ function Show() {
           onClose={() => setPayment(null)}
         />
       )}
+      
     </Container>
+    <p className="mb-4 m-4 text-end me-5 fw-bold">© 2024, Developed by 30GLOW</p>
+
+    </>
   );
 }
 

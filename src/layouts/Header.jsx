@@ -3,7 +3,7 @@ import "./Header.css";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import useAuthenContext from "@/contexts/AuthenContext";
 import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
+
 function Header() {
   const { logout, user, token } = useAuthenContext();
 
@@ -19,7 +19,7 @@ function Header() {
     <Navbar
       collapseOnSelect
       expand="lg"
-      className="bg-body-tertiary navbar-custom"
+      className="navbar-custom"
     >
       <Container>
         <Navbar.Brand as={Link} to="/danh-sach-lich">

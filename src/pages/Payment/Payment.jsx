@@ -85,6 +85,7 @@ function Payment({ show, paymentBill, onClose }) {
             <img
               src={`https://img.vietqr.io/image/${qrInfo.bankId}-${qrInfo.accountNo}-${qrInfo.teample}.png?amount=${qrInfo.amount}&addInfo=${qrInfo.des}&accountName=${qrInfo.accountNa}`}
               alt=""
+              className="img-fluid rounded mx-auto d-block mt-3"
             />
             {/* <div>
               {qrInfo.map((info) => {
