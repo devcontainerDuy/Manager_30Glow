@@ -188,6 +188,8 @@ function Statistical() {
           </div>
         </div>
       </div>
+      <p className="mb-4 m-4 text-end me-5 fw-bold">© 2024, Developed by 30GLOW</p>
+
     </React.Fragment>
   );
 }
