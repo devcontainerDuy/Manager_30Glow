@@ -15,18 +15,13 @@ import ManagerLayout from "./layouts/ManagerLayout";
 
 function App() {
   const { user } = useAuthenContext();
-  console.log("Tai khoan", user);
 
   return (
     <Routes>
       {user ? (
         <Route element={<ManagerLayout />}>
           <Route path="/danh-sach-lich" element={<Manager />} />
-          <Route
-            path="/danh-sach-lich/chi-tiet/:id"
-            element={<Show />}
-            key="manager"
-          />
+          <Route path="/danh-sach-lich/chi-tiet/:id" element={<Show />} key="manager" />
           <Route path="/statistical" element={<Statistical />} />
           <Route path="/bill" element={<Bill />} />
           <Route path="/staff" element={<Staff />} />
