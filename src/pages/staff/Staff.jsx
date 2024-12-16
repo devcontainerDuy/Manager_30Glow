@@ -49,7 +49,7 @@ function Staff() {
 
   return (
     <>
-    <Header />
+      <Header />
       {open && (
         <div
           style={{
@@ -64,7 +64,9 @@ function Staff() {
             padding: "16px",
           }}
         >
-          <h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Ghi chú hủy</h2>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+            Ghi chú hủy
+          </h2>
           <input
             type="text"
             placeholder="Ghi chú hủy ..."
@@ -101,149 +103,118 @@ function Staff() {
       )}
 
       <div className="container">
-          <h4>Danh sách lịch đặt</h4>
-          <div className="container">
-            <div className="row pt-2 ">
-                <div className="col-md-12 text-center">
-                <a
-                    style={{
-                    textDecoration: "none",
-                    fontSize: "1.25rem",
-                    fontWeight: "bold",
-                    color: "#333",
-                    }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={`#`}
-                >
-                    Tên Nhân viên
-                </a>
-                </div>
-            </div>
-
-            <div className="bg-white card-body">
-                <div className="row">
-                <div className="col-md-4 mb-3">
-                    <div className="input-group">
-                    <span className="input-group-text" id="basic-addon1">
-                        Tên khách
-                    </span>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Username"
-                        aria-label="Username"
-                        disabled
-                        value="Customer Name"
-                        aria-describedby="basic-addon1"
-                        style={{
-                        border: "1px solid #ccc",
-                        borderRadius: "5px",
-                        padding: "10px",
-                        }}
-                    />
-                    </div>
-                </div>
-
-                <div className="col-md-4 mb-3">
-                    <div className="input-group">
-                    <span className="input-group-text" id="basic-addon2">
-                        Số điện thoại
-                    </span>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Phone"
-                        aria-label="Phone"
-                        disabled
-                        value="Phone Number"
-                        aria-describedby="basic-addon2"
-                        style={{
-                        border: "1px solid #ccc",
-                        borderRadius: "5px",
-                        padding: "10px",
-                        }}
-                    />
-                    </div>
-                </div>
-                <div className="col-md-4 mb-3">
-                    <div className="input-group">
-                    <span className="input-group-text" id="basic-addon2">
-                        Dịch vụ
-                    </span>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="services"
-                        aria-label="services"
-                        disabled
-                        value="Dịch vụ"
-                        aria-describedby="basic-addon2"
-                        style={{
-                        border: "1px solid #ccc",
-                        borderRadius: "5px",
-                        padding: "10px",
-                        }}
-                    />
-                    </div>
-                </div>
-
-                <div className="col-md-4 mb-3">
-                    <div className="input-group">
-                    <span className="input-group-text" id="basic-addon3">
-                        Thời gian
-                    </span>
-                    <input
-                        type="datetime-local"
-                        className="form-control"
-                        placeholder="Time"
-                        aria-label="Time"
-                        disabled
-                        value="2024-11-17T15:30"
-                        aria-describedby="basic-addon3"
-                        style={{
-                        border: "1px solid #ccc",
-                        borderRadius: "5px",
-                        padding: "10px",
-                        }}
-                    />
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <div className="text-end bg-white card-footer text-muted">
-                <button
-                className="btn btn-sm btn-primary"
+        <h4>Danh sách lịch đặt</h4>
+        <div className="container">
+          <div className="row pt-2 ">
+            <div className="col-md-12 text-center">
+              <a
                 style={{
-                    padding: "8px 16px",
-                    borderRadius: "5px",
-                    border: "1px solid #007bff",
-                    backgroundColor: "#007bff",
-                    color: "#fff",
+                  textDecoration: "none",
+                  fontSize: "1.25rem",
+                  fontWeight: "bold",
+                  color: "#333",
                 }}
-                onClick={() => {}}
-                >
-                Hoàn thành
-                </button>
-                <button
-                className="btn btn-sm btn-danger ms-3"
-                style={{
-                    padding: "8px 16px",
-                    borderRadius: "5px",
-                    border: "1px solid #dc3545",
-                    backgroundColor: "#dc3545",
-                    color: "#fff",
-                }}
-                onClick={() => setOpen(true)}
-                >
-                Hủy
-                </button>
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`#`}
+              >
+                Tên Nhân viên
+              </a>
             </div>
-            </div>
-
           </div>
 
+          <div className="bg-white card-body">
+            <div className="row">
+              <div className="col-md-4 mb-3">
+                <div className="input-group">
+                  <span className="input-group-text" id="basic-addon1">
+                    Tên khách
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Username"
+                    aria-label="Username"
+                    disabled
+                    value="Customer Name"
+                    aria-describedby="basic-addon1"
+                    style={{
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      padding: "10px",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-4 mb-3">
+                <div className="input-group">
+                  <span className="input-group-text" id="basic-addon2">
+                    Số điện thoại
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Phone"
+                    aria-label="Phone"
+                    disabled
+                    value="Phone Number"
+                    aria-describedby="basic-addon2"
+                    style={{
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      padding: "10px",
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="col-md-4 mb-3">
+                <div className="input-group">
+                  <span className="input-group-text" id="basic-addon2">
+                    Dịch vụ
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="services"
+                    aria-label="services"
+                    disabled
+                    value="Dịch vụ"
+                    aria-describedby="basic-addon2"
+                    style={{
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      padding: "10px",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-4 mb-3">
+                <div className="input-group">
+                  <span className="input-group-text" id="basic-addon3">
+                    Thời gian
+                  </span>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    placeholder="Time"
+                    aria-label="Time"
+                    disabled
+                    value="2024-11-17T15:30"
+                    aria-describedby="basic-addon3"
+                    style={{
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      padding: "10px",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

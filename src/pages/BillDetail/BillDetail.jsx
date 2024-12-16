@@ -14,10 +14,12 @@ function BillDetail({ show, billDetail, formatter, onClose }) {
               <h4 className="mb-3 text-center fw-bold">Thông tin khách hàng</h4>
               <div>
                 <p>
-                  <strong>Tên:</strong> {billDetail.customer?.name || "Không rõ"}
+                  <strong>Tên:</strong>{" "}
+                  {billDetail.customer?.name || "Không rõ"}
                 </p>
                 <p>
-                  <strong>Số điện thoại:</strong> {billDetail.customer?.phone || "Không rõ"}
+                  <strong>Số điện thoại:</strong>{" "}
+                  {billDetail.customer?.phone || "Không rõ"}
                 </p>
               </div>
             </div>

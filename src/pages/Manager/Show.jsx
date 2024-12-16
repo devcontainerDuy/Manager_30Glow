@@ -18,7 +18,7 @@ import Payment from "../Payment/Payment";
 
 function Show() {
   const { id } = useParams();
-  const { token } = useAuthenContext();
+  const { token, user } = useAuthenContext();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [staff, setStaff] = useState([]);
@@ -130,268 +130,275 @@ function Show() {
 
   return (
     <>
-    <Container>
-      <Row>
-        <Col xs="12">
-          <div className="text-start">
-            <h4>Chi tiết dịch vụ đặt</h4>
-          </div>
-          <Form encType="multipart/form-data">
-            <Row className="row-gap-3">
-              {/* Thông tin Booking */}
-              <Col xs={12} md={8}>
-                <Row className="row-gap-3">
-                  <Col xs={12}>
-                    <Card>
-                      <Card.Body>
-                        <Card.Title className="text-primary">
-                          Thông tin Booking
-                        </Card.Title>
+      <Container>
+        <Row>
+          <Col xs="12">
+            <div className="text-start">
+              <h4>Chi tiết dịch vụ đặt</h4>
+            </div>
+            <Form encType="multipart/form-data">
+              <Row className="row-gap-3">
+                {/* Thông tin Booking */}
+                <Col xs={12} md={8}>
+                  <Row className="row-gap-3">
+                    <Col xs={12}>
+                      <Card>
+                        <Card.Body>
+                          <Card.Title className="text-primary">
+                            Thông tin Booking
+                          </Card.Title>
 
-                        <Row className="mb-3">
-                          {/* Ngày đặt */}
-                          <Col md={6}>
-                            <Row className="column-gap-1">
-                              <Col xs={14}>
-                                <Form.Group className="mb-3" controlId="status">
-                                  <Form.Label>Trạng thái</Form.Label>
-                                  <Form.Select
-                                    value={status}
-                                    onChange={(e) =>
-                                      setStatus(Number(e.target.value))
-                                    }
+                          <Row className="mb-3">
+                            {/* Ngày đặt */}
+                            <Col md={6}>
+                              <Row className="column-gap-1">
+                                <Col xs={14}>
+                                  <Form.Group
+                                    className="mb-3"
+                                    controlId="status"
                                   >
-                                    <option value={0}>
-                                      Chưa xếp nhân viên
-                                    </option>
-                                    <option value={1}>Đã xếp nhân viên</option>
-                                    <option value={2}>Đang thực hiện</option>
-                                    <option value={3}>Đã xong</option>
-                                    <option value={4}>Đã thanh toán</option>
-                                    <option value={5}>Lịch đã hủy</option>
-                                  </Form.Select>
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                          </Col>
-                          {/* Giờ đặt */}
-                          <Col md={6}>
-                            <Form.Group controlId="bookingTime">
-                              <Form.Label>Giờ đặt</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={
-                                  data.time ? formatDateTime(data.time) : ""
-                                }
-                                readOnly
-                                disabled
-                              />
-                            </Form.Group>
-                          </Col>
+                                    <Form.Label>Trạng thái</Form.Label>
+                                    <Form.Select
+                                      value={status}
+                                      onChange={(e) =>
+                                        setStatus(Number(e.target.value))
+                                      }
+                                    >
+                                      <option value={0}>
+                                        Chưa xếp nhân viên
+                                      </option>
+                                      <option value={1}>
+                                        Đã xếp nhân viên
+                                      </option>
+                                      <option value={2}>Đang thực hiện</option>
+                                      <option value={3}>Đã xong</option>
+                                      <option value={4}>Đã thanh toán</option>
+                                      <option value={5}>Lịch đã hủy</option>
+                                    </Form.Select>
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                            </Col>
+                            {/* Giờ đặt */}
+                            <Col md={6}>
+                              <Form.Group controlId="bookingTime">
+                                <Form.Label>Giờ đặt</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  value={
+                                    data.time ? formatDateTime(data.time) : ""
+                                  }
+                                  readOnly
+                                  disabled
+                                />
+                              </Form.Group>
+                            </Col>
 
-                          <Col xs={12}>
-                            <Form.Group className="mb-3" controlId="note">
-                              <Form.Label>Ghi chú</Form.Label>
-                              <Form.Control
-                                as="textarea"
-                                rows={3}
-                                placeholder="Nhập ghi chú..."
-                                value={data.note}
-                                disabled={
-                                  data.status !== 5 && status === 5
-                                    ? false
-                                    : true
-                                }
-                                onChange={(e) => setNote(e.target.value)}
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col xs={12}>
-                    <Card>
-                      <Card.Body>
-                        <Card.Title className="text-primary">
-                          Danh sách Dịch vụ
-                        </Card.Title>
-                        <Table striped bordered hover responsive>
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>Tên Dịch vụ</th>
-                              <th>Giá</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {data.service && data.service.length > 0 ? (
-                              data.service.map((item, index) => (
-                                <tr key={item.id}>
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {item.name}{" "}
-                                    <span className="text-danger">
-                                      {item.price
-                                        ? `(${item.discount.toLocaleString()}%)`
-                                        : ""}
-                                    </span>
-                                  </td>
-                                  <td>{item.price.toLocaleString()} VND</td>
-                                </tr>
-                              ))
-                            ) : (
+                            <Col xs={12}>
+                              <Form.Group className="mb-3" controlId="note">
+                                <Form.Label>Ghi chú</Form.Label>
+                                <Form.Control
+                                  as="textarea"
+                                  rows={3}
+                                  placeholder="Nhập ghi chú..."
+                                  value={data.note}
+                                  disabled={
+                                    data.status !== 5 && status === 5
+                                      ? false
+                                      : true
+                                  }
+                                  onChange={(e) => setNote(e.target.value)}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col xs={12}>
+                      <Card>
+                        <Card.Body>
+                          <Card.Title className="text-primary">
+                            Danh sách Dịch vụ
+                          </Card.Title>
+                          <Table striped bordered hover responsive>
+                            <thead>
                               <tr>
-                                <td colSpan="3">
-                                  Không có dịch vụ nào được chọn.
-                                </td>
+                                <th>#</th>
+                                <th>Tên Dịch vụ</th>
+                                <th>Giá</th>
                               </tr>
-                            )}
-                          </tbody>
-                          <tfoot>
-                            <tr>
-                              <th colSpan="2">Tổng cộng</th>
-                              <th>
-                                {data.service
-                                  ?.reduce(
-                                    (total, item) =>
-                                      total + item.price || item.compare_price,
-                                    0
-                                  )
-                                  .toLocaleString()}{" "}
-                                VND
-                              </th>
-                            </tr>
-                          </tfoot>
-                        </Table>
-                        <Button
-                          className="mt-3"
-                          onClick={() => handleOpenPayment(data)}
-                        >
-                          Thanh toán
-                        </Button>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-              </Col>
-
-              {/* Thông tin Khách hàng & nhân viên */}
-              <Col xs={12} md={4}>
-                <Row className="row-gap-3">
-                  <Col xs={12}>
-                    <Card>
-                      <Card.Body>
-                        <Card.Title className="text-primary">
-                          Thông tin Khách hàng
-                        </Card.Title>
-                        <p>
-                          <strong>Tên:</strong> {data.customer?.name}
-                        </p>
-                        <p>
-                          <strong>Email:</strong>{" "}
-                          <a href={`mailto:${data.customer?.email}`}>
-                            {data.customer?.email}
-                          </a>
-                        </p>
-                        <p>
-                          <strong>Số điện thoại:</strong>{" "}
-                          {data.customer?.phone || "Không có"}
-                        </p>
-                        <p>
-                          <strong>Địa chỉ:</strong>{" "}
-                          {data.customer?.address || "Không có"}
-                        </p>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col xs={12}>
-                    <Card>
-                      <Card.Body>
-                        {status !== 0 && data.user !== null ? (
-                          <>
-                            <Card.Title className="text-primary">
-                              Thông tin Nhân viên
-                            </Card.Title>
-                            <p>
-                              <strong>Tên:</strong> {data.user?.name}
-                            </p>
-                            <p>
-                              <strong>Email:</strong>{" "}
-                              <a href={`mailto:${data.user?.email}`}>
-                                {data.user?.email}
-                              </a>
-                            </p>
-                            <p>
-                              <strong>Số điện thoại:</strong>{" "}
-                              {data.user?.phone || "Không có"}
-                            </p>
-                            <p>
-                              <strong>Địa chi:</strong>{" "}
-                              {data.user?.address || "Không có"}
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <Card.Title className="text-primary">
-                              Chọn nhân viên
-                            </Card.Title>
-                            <Form.Group className="mt-3" controlId="user_id">
-                              <Form.Select
-                                value={userId}
-                                onChange={(e) => setUserId(e.target.value)}
-                              >
-                                <option value="">Chọn nhân viên</option>
-                                {staff.length > 0 ? (
-                                  staff.map((item) => (
-                                    <option key={item.id} value={item.uid}>
-                                      {item.name}
-                                    </option>
-                                  ))
-                                ) : (
-                                  <option value="">
-                                    Không có nhân viên nào
-                                  </option>
-                                )}
-                              </Form.Select>
-                            </Form.Group>
-                          </>
-                        )}
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-                <Col className="col-12 m-2 mt-4 me-5 d-flex justify-content-end ">
-                  <div className="m-2">
-                    <Button
-                      placeholder="Lưu lại"
-                      variant="primary"
-                      size="md"
-                      type="button"
-                      onClick={handleSubmit}
-                    >
-                      <span>Lưu lại </span>
-                      <FontAwesomeIcon icon={faFloppyDisk} />
-                    </Button>
-                  </div>
+                            </thead>
+                            <tbody>
+                              {data.service && data.service.length > 0 ? (
+                                data.service.map((item, index) => (
+                                  <tr key={item.id}>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                      {item.name}{" "}
+                                      <span className="text-danger">
+                                        {item.price
+                                          ? `(${item.discount.toLocaleString()}%)`
+                                          : ""}
+                                      </span>
+                                    </td>
+                                    <td>{item.price.toLocaleString()} VND</td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan="3">
+                                    Không có dịch vụ nào được chọn.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                            <tfoot>
+                              <tr>
+                                <th colSpan="2">Tổng cộng</th>
+                                <th>
+                                  {data.service
+                                    ?.reduce(
+                                      (total, item) =>
+                                        total + item.price ||
+                                        item.compare_price,
+                                      0
+                                    )
+                                    .toLocaleString()}{" "}
+                                  VND
+                                </th>
+                              </tr>
+                            </tfoot>
+                          </Table>
+                          <Button
+                            className="mt-3"
+                            onClick={() => handleOpenPayment(data)}
+                            disabled={status !== 3}
+                          >
+                            Thanh toán
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
                 </Col>
-              </Col>
-            </Row>
-          </Form>
-        </Col>
-        {/* End DataGrid */}
-      </Row>
-      {payment && (
-        <Payment
-          show={!!payment}
-          paymentBill={payment}
-          onClose={() => setPayment(null)}
-        />
-      )}
-      
-    </Container>
-    <p className="mb-4 m-4 text-end me-5 fw-bold">© 2024, Developed by 30GLOW</p>
 
+                {/* Thông tin Khách hàng & nhân viên */}
+                <Col xs={12} md={4}>
+                  <Row className="row-gap-3">
+                    <Col xs={12}>
+                      <Card>
+                        <Card.Body>
+                          <Card.Title className="text-primary">
+                            Thông tin Khách hàng
+                          </Card.Title>
+                          <p>
+                            <strong>Tên:</strong> {data.customer?.name}
+                          </p>
+                          <p>
+                            <strong>Email:</strong>{" "}
+                            <a href={`mailto:${data.customer?.email}`}>
+                              {data.customer?.email}
+                            </a>
+                          </p>
+                          <p>
+                            <strong>Số điện thoại:</strong>{" "}
+                            {data.customer?.phone || "Không có"}
+                          </p>
+                          <p>
+                            <strong>Địa chỉ:</strong>{" "}
+                            {data.customer?.address || "Không có"}
+                          </p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col xs={12}>
+                      <Card>
+                        <Card.Body>
+                          {status !== 0 && data.user !== null ? (
+                            <>
+                              <Card.Title className="text-primary">
+                                Thông tin Nhân viên
+                              </Card.Title>
+                              <p>
+                                <strong>Tên:</strong> {data.user?.name}
+                              </p>
+                              <p>
+                                <strong>Email:</strong>{" "}
+                                <a href={`mailto:${data.user?.email}`}>
+                                  {data.user?.email}
+                                </a>
+                              </p>
+                              <p>
+                                <strong>Số điện thoại:</strong>{" "}
+                                {data.user?.phone || "Không có"}
+                              </p>
+                              <p>
+                                <strong>Địa chi:</strong>{" "}
+                                {data.user?.address || "Không có"}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <Card.Title className="text-primary">
+                                Chọn nhân viên
+                              </Card.Title>
+                              <Form.Group className="mt-3" controlId="user_id">
+                                <Form.Select
+                                  value={userId}
+                                  onChange={(e) => setUserId(e.target.value)}
+                                >
+                                  <option value="">Chọn nhân viên</option>
+                                  {staff.length > 0 ? (
+                                    staff.map((item) => (
+                                      <option key={item.id} value={item.uid}>
+                                        {item.name}
+                                      </option>
+                                    ))
+                                  ) : (
+                                    <option value="">
+                                      Không có nhân viên nào
+                                    </option>
+                                  )}
+                                </Form.Select>
+                              </Form.Group>
+                            </>
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                  <Col className="col-12 m-2 mt-4 me-5 d-flex justify-content-end ">
+                    <div className="m-2">
+                      <Button
+                        placeholder="Lưu lại"
+                        variant="primary"
+                        size="md"
+                        type="button"
+                        onClick={handleSubmit}
+                      >
+                        <span>Lưu lại </span>
+                        <FontAwesomeIcon icon={faFloppyDisk} />
+                      </Button>
+                    </div>
+                  </Col>
+                </Col>
+              </Row>
+            </Form>
+          </Col>
+          {/* End DataGrid */}
+        </Row>
+        {payment && (
+          <Payment
+            show={!!payment}
+            paymentBill={payment}
+            onClose={() => setPayment(null)}
+          />
+        )}
+      </Container>
+      <p className="mb-4 m-4 text-end me-5 fw-bold">
+        © 2024, Developed by 30GLOW
+      </p>
     </>
   );
 }

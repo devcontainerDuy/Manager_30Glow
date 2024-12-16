@@ -16,11 +16,7 @@ function Header() {
   };
 
   return (
-    <Navbar
-      collapseOnSelect
-      expand="lg"
-      className="navbar-custom"
-    >
+    <Navbar collapseOnSelect expand="lg" className="navbar-custom">
       <Container>
         <Navbar.Brand as={Link} to="/danh-sach-lich">
           <img
@@ -31,17 +27,25 @@ function Header() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/danh-sach-lich">
-              Trang Chủ
-            </Nav.Link>
-            <Nav.Link as={Link} to="/statistical">
-              Thống kê
-            </Nav.Link>
-            <Nav.Link as={Link} to="/bill">
-              Hóa đơn
-            </Nav.Link>
-          </Nav>
+          {user && Array.isArray(user.roles) ? (
+            user.roles.includes("Manager") ? (
+              <Nav className="me-auto">
+                <Nav.Link as={Link} to="/danh-sach-lich">
+                  Trang Chủ
+                </Nav.Link>
+                <Nav.Link as={Link} to="/statistical">
+                  Thống kê
+                </Nav.Link>
+                <Nav.Link as={Link} to="/bill">
+                  Hóa đơn
+                </Nav.Link>
+              </Nav>
+            ) : (
+              ""
+            )
+          ) : (
+            ""
+          )}
 
           <Dropdown>
             <Dropdown.Toggle
