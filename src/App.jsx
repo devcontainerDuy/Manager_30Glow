@@ -15,10 +15,10 @@ import ManagerLayout from "./layouts/ManagerLayout";
 
 function App() {
   const { user } = useAuthenContext();
-  console.log("Tai khoan", user);
 
   return (
     <Routes>
+
       {user && Array.isArray(user.roles) ? (
         user.roles.includes("Manager") ? (
           <Route element={<ManagerLayout />}>
@@ -44,6 +44,7 @@ function App() {
         ) : (
           <Route path="/not-found" element={<NotFound />} />
         )
+
       ) : (
         <Route path="/dang-nhap" element={<Login />} />
       )}
