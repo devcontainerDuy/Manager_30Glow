@@ -125,8 +125,9 @@ function Show() {
 
   const handleOpenPayment = (data) => {
     setPayment(data);
-    console.log(data);
   };
+
+  console.log(data);
 
   return (
     <>
@@ -164,16 +165,36 @@ function Show() {
                                         setStatus(Number(e.target.value))
                                       }
                                     >
-                                      <option value={0}>
-                                        Chưa xếp nhân viên
-                                      </option>
-                                      <option value={1}>
-                                        Đã xếp nhân viên
-                                      </option>
-                                      <option value={2}>Đang thực hiện</option>
-                                      <option value={3}>Đã xong</option>
-                                      <option value={4}>Đã thanh toán</option>
-                                      <option value={5}>Lịch đã hủy</option>
+                                      {user &&
+                                        Array.isArray(user.roles) &&
+                                        (user.roles.includes("Manager") ? (
+                                          <>
+                                            {" "}
+                                            <option value={0}>
+                                              Chưa xếp nhân viên
+                                            </option>
+                                            <option value={1}>
+                                              Đã xếp nhân viên
+                                            </option>
+                                            <option value={2}>
+                                              Đang thực hiện
+                                            </option>
+                                            <option value={3}>Đã xong</option>
+                                            <option value={4}>
+                                              Đã thanh toán
+                                            </option>
+                                            <option value={5}>
+                                              Lịch đã hủy
+                                            </option>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <option value={2}>
+                                              Đang thực hiện
+                                            </option>
+                                            <option value={3}>Đã xong</option>
+                                          </>
+                                        ))}
                                     </Form.Select>
                                   </Form.Group>
                                 </Col>
@@ -274,6 +295,14 @@ function Show() {
                             className="mt-3"
                             onClick={() => handleOpenPayment(data)}
                             disabled={status !== 3}
+                            style={{
+                              display:
+                                user && Array.isArray(user.roles)
+                                  ? user.roles.includes("Staff")
+                                    ? "none"
+                                    : ""
+                                  : "",
+                            }}
                           >
                             Thanh toán
                           </Button>
