@@ -20,12 +20,12 @@ function Bill() {
   // Map trạng thái hóa đơn
   const statusMap = {
     0: {
-      text: "Đang chờ xử lý",
+      text: "Chưa thanh toán",
       class: "text-warning",
       icon: "bi bi-clock",
     },
     1: {
-      text: "Đã xác nhận",
+      text: "Đã thanh toán",
       class: "text-primary",
       icon: "bi bi-person-fill-check",
     },
@@ -33,12 +33,7 @@ function Bill() {
       text: "Thất bại",
       class: "text-danger",
       icon: "bi bi-x-circle",
-    },
-    default: {
-      text: "Chưa xác định",
-      class: "text-muted",
-      icon: "bi bi-question-circle",
-    },
+    }
   };
 
   // Lấy dữ liệu hóa đơn từ API

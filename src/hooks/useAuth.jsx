@@ -34,9 +34,7 @@ export const useAuth = () => {
           setToken(response.data.token);
           setExpiry(response.data.expiry);
           setUser(true);
-          setTimeout(() => {
-            navigate("/danh-sach-lich", { replace: true });
-          }, 2000);
+          navigate("/danh-sach-lich", { replace: true });
         }, 2000);
       } else {
         window.notyf.error(response.data.message);
@@ -84,9 +82,7 @@ export const useAuth = () => {
         setToken(null);
         setExpiry(null);
         setUser(null);
-        setTimeout(() => {
-          navigate("/dang-nhap", { replace: true });
-        }, 2000);
+        navigate("/dang-nhap", { replace: true });
         window.notyf.success("Đăng xuất thành công!");
       }
     } catch (error) {

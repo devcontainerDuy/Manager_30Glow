@@ -114,6 +114,7 @@ function Statistical() {
     .reduce((sum, row) => sum + row[1], 0);
   const totalPieChart = pieData.slice(1).reduce((sum, row) => sum + row[1], 0);
 
+  console.log(totalBarProduct, totalBarService);
   return (
     <React.Fragment>
       <div className="container mt-4">
@@ -130,7 +131,7 @@ function Statistical() {
             <div className="summary-box p-4 bg-light rounded shadow">
               <h5>Doanh thu sản phẩm</h5>
               <p className="text-success fs-5 fw-bold">
-                {formatter.format(totalBarProduct)}
+              {formatter.format(totalBarProduct)}
               </p>
             </div>
           </div>
@@ -188,8 +189,9 @@ function Statistical() {
           </div>
         </div>
       </div>
-      <p className="mb-4 m-4 text-end me-5 fw-bold">© 2024, Developed by 30GLOW</p>
-
+      <p className="mb-4 m-4 text-end me-5 fw-bold">
+        © 2024, Developed by 30GLOW
+      </p>
     </React.Fragment>
   );
 }
