@@ -7,7 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 function Header() {
   const { logout, user, token } = useAuthenContext();
 
-  console.log("token", token);
+  // console.log("token", token);
 
   const handleLogout = () => {
     if (window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
@@ -53,7 +53,7 @@ function Header() {
               className="p-0 border-0 bg-transparent"
               style={{ boxShadow: "none", background: "none" }}
             >
-              <span className="navbar-text">
+              <span className="navbar-text ">
                 Xin chào: <strong>{user.name}</strong>
               </span>
               <img
@@ -64,7 +64,6 @@ function Header() {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">Thông tin cá nhân</Dropdown.Item>
               <Dropdown.Item
                 onClick={handleLogout}
                 style={{ cursor: "pointer" }}
