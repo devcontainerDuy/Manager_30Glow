@@ -15,7 +15,7 @@ import ManagerLayout from "./layouts/ManagerLayout";
 
 function App() {
   const { user } = useAuthenContext();
-  console.log("Tai khoan", user);
+  // console.log("Tai khoan", user);
 
   return (
     <Routes>
