@@ -1,19 +1,10 @@
 import { useEffect, useState } from "react";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import useAuthenContext from "@/contexts/AuthenContext";
 import Paginated from "@/components/Paginated";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-  Table,
-} from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -31,6 +22,7 @@ function Index() {
   const navigate = useNavigate();
 
   const { logout, user, token } = useAuthenContext();
+
   const statusMap = {
     0: {
       text: "Đang chờ xếp nhân viên",
@@ -76,14 +68,11 @@ function Index() {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/bookings?page=" + page,
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
+        const res = await axios.get(import.meta.env.VITE_API_URL + "/bookings?page=" + page, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
         if (res.data.check === true) {
           setBookings(res.data.data.data);
           setTotalPage(res.data.data.last_page);
@@ -98,14 +87,11 @@ function Index() {
 
     const fetchService = async () => {
       try {
-        const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/services",
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
+        const res = await axios.get(import.meta.env.VITE_API_URL + "/services", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
         if (res.data.check === true) {
           setServices(res.data.data.data);
         }
@@ -115,37 +101,19 @@ function Index() {
     };
     fetchService();
     fetchBooking();
-  }, [page]);
+  }, [page, token, logout]);
 
   useEffect(() => {
     const filtered = bookings.filter((booking) => {
-      const matchesPhone =
-        selectedPhone === "" ||
-        booking.customer?.phone?.includes(selectedPhone);
-      const matchesCustomer =
-        selectedCustomer === "" ||
-        booking.customer?.name
-          ?.toLowerCase()
-          .includes(selectedCustomer.toLowerCase());
-      const matchesDate =
-        selectedDate === null ||
-        new Date(booking.time).toDateString() === selectedDate.toDateString();
-      const matchesService =
-        selectedService === "" ||
-        booking.service?.some(
-          (service) => service.id === parseInt(selectedService)
-        );
+      const matchesPhone = selectedPhone === "" || booking.customer?.phone?.includes(selectedPhone);
+      const matchesCustomer = selectedCustomer === "" || booking.customer?.name?.toLowerCase().includes(selectedCustomer.toLowerCase());
+      const matchesDate = selectedDate === null || new Date(booking.time).toDateString() === selectedDate.toDateString();
+      const matchesService = selectedService === "" || booking.service?.some((service) => service.id === parseInt(selectedService));
 
       return matchesPhone && matchesCustomer && matchesDate && matchesService;
     });
     setFilteredBookings(filtered);
-  }, [
-    selectedPhone,
-    selectedCustomer,
-    selectedDate,
-    selectedService,
-    bookings,
-  ]);
+  }, [selectedPhone, selectedCustomer, selectedDate, selectedService, bookings]);
 
   useEffect(() => {
     const channel = window.pusher.subscribe("channelBookings");
@@ -156,11 +124,7 @@ function Index() {
 
     channel.bind("BookingUpdated", (response) => {
       setBookings((prevData) => {
-        return prevData.map((booking) =>
-          booking.id === response.bookingData.id
-            ? response.bookingData
-            : booking
-        );
+        return prevData.map((booking) => (booking.id === response.bookingData.id ? response.bookingData : booking));
       });
     });
   }, []);
@@ -181,10 +145,7 @@ function Index() {
                   <Col>
                     <Form.Group className="mb-3">
                       <Form.Label htmlFor="service">Tên dịch vụ</Form.Label>
-                      <Form.Select
-                        id="service"
-                        onChange={(e) => setSelectedService(e.target.value)}
-                      >
+                      <Form.Select id="service" onChange={(e) => setSelectedService(e.target.value)}>
                         <option value="">-- Chọn dịch vụ --</option>
                         {services.map((service) => (
                           <option key={service.id} value={service.id}>
@@ -198,29 +159,19 @@ function Index() {
                   <Col>
                     <Form.Group className="mb-3">
                       <Form.Label htmlFor="customer">Tên khách hàng</Form.Label>
-                      <Form.Control
-                        type="text"
-                        id="customer"
-                        placeholder="Nhập tên khách hàng"
-                        onChange={(e) => setSelectedCustomer(e.target.value)}
-                      />
+                      <Form.Control type="text" id="customer" placeholder="Nhập tên khách hàng" onChange={(e) => setSelectedCustomer(e.target.value)} />
                     </Form.Group>
                   </Col>
 
                   <Col>
                     <Form.Group className="mb-3">
                       <Form.Label htmlFor="phone">Số điện thoại</Form.Label>
-                      <Form.Control
-                        type="text"
-                        id="phone"
-                        placeholder="Nhập số điện thoại"
-                        onChange={(e) => setSelectedPhone(e.target.value)}
-                      />
+                      <Form.Control type="text" id="phone" placeholder="Nhập số điện thoại" onChange={(e) => setSelectedPhone(e.target.value)} />
                     </Form.Group>
                   </Col>
 
                   <Col>
-                    <Form.Group className="mb-3">
+                    <Form.Group className="mb-3 d-flex flex-column">
                       <Form.Label htmlFor="time">Thời gian</Form.Label>
                       <DatePicker
                         id="time"
@@ -268,13 +219,7 @@ function Index() {
                       <span className="input-group-text" id="basic-addon1">
                         Tên nhân viên
                       </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        disabled
-                        value={user.name}
-                        aria-describedby="basic-addon1"
-                      />
+                      <input type="text" className="form-control" disabled value={user.name} aria-describedby="basic-addon1" />
                     </div>
                   </div>
 
@@ -283,13 +228,7 @@ function Index() {
                       <span className="input-group-text" id="basic-addon2">
                         Số điện thoại
                       </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        disabled
-                        value={user.phone}
-                        aria-describedby="basic-addon2"
-                      />
+                      <input type="text" className="form-control" disabled value={user.phone} aria-describedby="basic-addon2" />
                     </div>
                   </div>
 
@@ -298,13 +237,7 @@ function Index() {
                       <span className="input-group-text" id="basic-addon3">
                         Email
                       </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        disabled
-                        value={user.email}
-                        aria-describedby="basic-addon3"
-                      />
+                      <input type="text" className="form-control" disabled value={user.email} aria-describedby="basic-addon3" />
                     </div>
                   </div>
                 </div>
@@ -336,10 +269,7 @@ function Index() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>
-                        <span
-                          className="text-break"
-                          title={item.service?.map((s) => s.name).join(", ")}
-                        >
+                        <span className="text-break" title={item.service?.map((s) => s.name).join(", ")}>
                           {item.service?.map((s) => s.name).join(", ")}
                         </span>
                       </td>
@@ -349,17 +279,12 @@ function Index() {
                       <td>{item.user?.name || "Chưa sắp xếp nhân viên"}</td>
                       <td>
                         <span className={statusMap[item.status]?.class}>
-                          <i className={statusMap[item.status]?.icon}></i>{" "}
-                          {statusMap[item.status]?.text}
+                          <i className={statusMap[item.status]?.icon}></i> {statusMap[item.status]?.text}
                         </span>
                       </td>
                       <td>
                         <div className="d-flex gap-2">
-                          <Button
-                            variant="info"
-                            title="Chi tiết"
-                            onClick={() => handleDetail(item.id)}
-                          >
+                          <Button variant="info" title="Chi tiết" onClick={() => handleDetail(item.id)}>
                             <FontAwesomeIcon icon={faCircleInfo} />
                           </Button>
                         </div>
@@ -381,9 +306,7 @@ function Index() {
 
       <Paginated current={page} total={totalPage} handle={handlePageChange} />
 
-      <p className="mb-4 m-4 text-end me-5 fw-bold">
-        © 2024, Developed by 30GLOW
-      </p>
+      <p className="mb-4 m-4 text-end me-5 fw-bold">© 2024, Developed by 30GLOW</p>
     </>
   );
 }
