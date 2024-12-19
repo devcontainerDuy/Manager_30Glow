@@ -274,11 +274,6 @@ function Index() {
                         disabled
                         value={user.name}
                         aria-describedby="basic-addon1"
-                        style={{
-                          border: "1px solid #ccc",
-                          borderRadius: "5px",
-                          padding: "10px",
-                        }}
                       />
                     </div>
                   </div>
@@ -294,17 +289,13 @@ function Index() {
                         disabled
                         value={user.phone}
                         aria-describedby="basic-addon2"
-                        style={{
-                          border: "1px solid #ccc",
-                          borderRadius: "5px",
-                          padding: "10px",
-                        }}
                       />
                     </div>
                   </div>
+
                   <div className="col-md-4 mb-3">
                     <div className="input-group">
-                      <span className="input-group-text" id="basic-addon2">
+                      <span className="input-group-text" id="basic-addon3">
                         Email
                       </span>
                       <input
@@ -312,12 +303,7 @@ function Index() {
                         className="form-control"
                         disabled
                         value={user.email}
-                        aria-describedby="basic-addon2"
-                        style={{
-                          border: "1px solid #ccc",
-                          borderRadius: "5px",
-                          padding: "10px",
-                        }}
+                        aria-describedby="basic-addon3"
                       />
                     </div>
                   </div>
