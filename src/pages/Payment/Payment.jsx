@@ -5,9 +5,7 @@ import { Button, Container, Modal, Table } from "react-bootstrap";
 function Payment({ show, paymentBill, onClose }) {
   const [paymentMethod, setPaymentMethod] = useState("");
 
-  const amountBill = paymentBill.service
-    ?.reduce((total, item) => total + item.price || item.compare_price, 0)
-    .toLocaleString();
+  const amountBill = paymentBill.service?.reduce((total, item) => total + item.price || item.compare_price, 0).toLocaleString();
 
   const amount = Number(amountBill.replace(/\./g, "").replace(/\./g, "."));
 
@@ -76,17 +74,13 @@ function Payment({ show, paymentBill, onClose }) {
           <Modal.Body>
             <div id="bill-content">
               <div className="mb-4">
-                <h4 className="mb-3 text-center fw-bold">
-                  Thông tin khách hàng
-                </h4>
+                <h4 className="mb-3 text-center fw-bold">Thông tin khách hàng</h4>
                 <div>
                   <p>
-                    <strong>Tên:</strong>{" "}
-                    {paymentBill.customer?.name || "Không rõ"}
+                    <strong>Tên:</strong> {paymentBill.customer?.name || "Không rõ"}
                   </p>
                   <p>
-                    <strong>Số điện thoại:</strong>{" "}
-                    {paymentBill.customer?.phone || "Không rõ"}
+                    <strong>Số điện thoại:</strong> {paymentBill.customer?.phone || "Không rõ"}
                   </p>
                 </div>
               </div>
@@ -105,12 +99,7 @@ function Payment({ show, paymentBill, onClose }) {
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>
-                          {item.name}{" "}
-                          <span className="text-danger">
-                            {item.price
-                              ? `(${item.discount.toLocaleString()}%)`
-                              : ""}{" "}
-                          </span>
+                          {item.name} <span className="text-danger">{item.price ? `(${item.discount.toLocaleString()}%)` : ""} </span>
                         </td>
                         <td>{item.price.toLocaleString()} VND</td>
                       </tr>
@@ -121,16 +110,7 @@ function Payment({ show, paymentBill, onClose }) {
                     <td colSpan="2" className="text-end">
                       <strong>Tổng cộng:</strong>
                     </td>
-                    <td>
-                      {paymentBill.service
-                        ?.reduce(
-                          (total, item) =>
-                            total + item.price || item.compare_price,
-                          0
-                        )
-                        .toLocaleString()}{" "}
-                      VND
-                    </td>
+                    <td>{paymentBill.service?.reduce((total, item) => total + item.price || item.compare_price, 0).toLocaleString()} VND</td>
                   </tr>
                 </tfoot>
               </Table>
@@ -139,23 +119,11 @@ function Payment({ show, paymentBill, onClose }) {
               <h3>Hình thức thanh toán:</h3>
 
               <label style={{ marginRight: "10px" }}>
-                <input
-                  type="radio"
-                  value="Tiền mặt"
-                  checked={paymentMethod === "Tiền mặt"}
-                  onChange={handleOptionChange}
-                  style={{ marginRight: "5px" }}
-                />
+                <input type="radio" value="Tiền mặt" checked={paymentMethod === "Tiền mặt"} onChange={handleOptionChange} style={{ marginRight: "5px" }} />
                 Tiền mặt
               </label>
               <label>
-                <input
-                  type="radio"
-                  value="Chuyển khoản"
-                  checked={paymentMethod === "Chuyển khoản"}
-                  onChange={handleOptionChange}
-                  style={{ marginRight: "5px" }}
-                />
+                <input type="radio" value="Chuyển khoản" checked={paymentMethod === "Chuyển khoản"} onChange={handleOptionChange} style={{ marginRight: "5px" }} />
                 Chuyển khoản
               </label>
             </div>

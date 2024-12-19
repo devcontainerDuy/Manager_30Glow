@@ -1,30 +1,20 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-  Table,
-} from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import useAuthenContext from "@/contexts/AuthenContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
-import "./index.css";
 import Payment from "../Payment/Payment";
+import { faFirstOrderAlt } from "@fortawesome/free-brands-svg-icons";
 
 function Show() {
   const { id } = useParams();
   const { token, user } = useAuthenContext();
-  const navigate = useNavigate();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({});
   const [staff, setStaff] = useState([]);
   const [status, setStatus] = useState(0);
   const [userId, setUserId] = useState(null);
-  const [payment, setPayment] = useState(null);
   const [note, setNote] = useState("");
 
   const formatDateTime = (dateString) => {
@@ -62,20 +52,13 @@ function Show() {
     }
 
     try {
-      const res = await axios.put(
-        import.meta.env.VITE_API_URL + "/bookings/" + id,
-        payload,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
+      const res = await axios.put(import.meta.env.VITE_API_URL + "/bookings/" + id, payload, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      });
       if (res.data.check === true) {
         window.notyf.success(res.data.message);
-        setTimeout(() => {
-          navigate("/danh-sach-lich/chi-tiet/" + id, { replace: true });
-        }, 2000);
       } else {
         window.notyf.error(res.data.message);
       }
@@ -87,14 +70,11 @@ function Show() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/bookings/" + id,
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
+        const res = await axios.get(import.meta.env.VITE_API_URL + "/bookings/" + id, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
         if (res.data.check === true) {
           setData(res.data.data);
           setStatus(res.data.data.status);
@@ -123,11 +103,34 @@ function Show() {
     fetchUser();
   }, [id, token]);
 
-  const handleOpenPayment = (data) => {
-    setPayment(data);
+  const handleOpenPayment = (e) => {
+    e.preventDefault();
+
+    axios
+      .post(import.meta.env.VITE_API_URL + "/bill-services", { booking_id: id }, { headers: { Authorization: "Bearer " + token } })
+      .then((res) => {
+        if (res.data.check === true) {
+          window.notyf.success(res.data.message);
+        } else {
+          window.notyf.error(res.data.message);
+        }
+      })
+      .catch((err) => {
+        window.notyf.error(err.response.data.message);
+      });
   };
 
-  console.log(data);
+  useEffect(() => {
+    const channel = window.pusher.subscribe("channelBookings");
+
+    channel.bind("BookingCreated", (response) => {
+      setData((prevData) => [response.bookingData, ...prevData]);
+    });
+
+    channel.bind("BookingUpdated", (response) => {
+      setData(response.bookingData);
+    });
+  }, [data]);
 
   return (
     <>
@@ -145,53 +148,32 @@ function Show() {
                     <Col xs={12}>
                       <Card>
                         <Card.Body>
-                          <Card.Title className="text-primary">
-                            Thông tin Booking
-                          </Card.Title>
+                          <Card.Title className="text-primary">Thông tin Booking</Card.Title>
 
                           <Row className="mb-3">
                             {/* Ngày đặt */}
                             <Col md={6}>
                               <Row className="column-gap-1">
                                 <Col xs={14}>
-                                  <Form.Group
-                                    className="mb-3"
-                                    controlId="status"
-                                  >
+                                  <Form.Group className="mb-3" controlId="status">
                                     <Form.Label>Trạng thái</Form.Label>
-                                    <Form.Select
-                                      value={status}
-                                      onChange={(e) =>
-                                        setStatus(Number(e.target.value))
-                                      }
-                                    >
+                                    <Form.Select value={status} onChange={(e) => setStatus(Number(e.target.value))}>
                                       {user &&
                                         Array.isArray(user.roles) &&
                                         (user.roles.includes("Manager") ? (
                                           <>
                                             {" "}
-                                            <option value={0}>
-                                              Chưa xếp nhân viên
-                                            </option>
-                                            <option value={1}>
-                                              Đã xếp nhân viên
-                                            </option>
-                                            <option value={2}>
-                                              Đang thực hiện
-                                            </option>
+                                            <option value={0}>Chưa xếp nhân viên</option>
+                                            <option value={1}>Đã xếp nhân viên</option>
+                                            <option value={2}>Đang thực hiện</option>
                                             <option value={3}>Đã xong</option>
-                                            <option value={4}>
-                                              Đã thanh toán
-                                            </option>
-                                            <option value={5}>
-                                              Lịch đã hủy
-                                            </option>
+                                            <option value={4}>Đã thanh toán</option>
+                                            <option value={5}>Lịch đã hủy</option>
                                           </>
                                         ) : (
                                           <>
-                                            <option value={2}>
-                                              Đang thực hiện
-                                            </option>
+                                            <option value={1}>Đã xếp nhân viên</option>
+                                            <option value={2}>Đang thực hiện</option>
                                             <option value={3}>Đã xong</option>
                                           </>
                                         ))}
@@ -204,14 +186,7 @@ function Show() {
                             <Col md={6}>
                               <Form.Group controlId="bookingTime">
                                 <Form.Label>Giờ đặt</Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  value={
-                                    data.time ? formatDateTime(data.time) : ""
-                                  }
-                                  readOnly
-                                  disabled
-                                />
+                                <Form.Control type="text" value={data.time ? formatDateTime(data.time) : ""} readOnly disabled />
                               </Form.Group>
                             </Col>
 
@@ -223,11 +198,7 @@ function Show() {
                                   rows={3}
                                   placeholder="Nhập ghi chú..."
                                   value={data.note}
-                                  disabled={
-                                    data.status !== 5 && status === 5
-                                      ? false
-                                      : true
-                                  }
+                                  disabled={data.status !== 5 && status === 5 ? false : true}
                                   onChange={(e) => setNote(e.target.value)}
                                 />
                               </Form.Group>
@@ -239,9 +210,7 @@ function Show() {
                     <Col xs={12}>
                       <Card>
                         <Card.Body>
-                          <Card.Title className="text-primary">
-                            Danh sách Dịch vụ
-                          </Card.Title>
+                          <Card.Title className="text-primary">Danh sách Dịch vụ</Card.Title>
                           <Table striped bordered hover responsive>
                             <thead>
                               <tr>
@@ -256,56 +225,24 @@ function Show() {
                                   <tr key={item.id}>
                                     <td>{index + 1}</td>
                                     <td>
-                                      {item.name}{" "}
-                                      <span className="text-danger">
-                                        {item.price
-                                          ? `(${item.discount.toLocaleString()}%)`
-                                          : ""}
-                                      </span>
+                                      {item.name} <span className="text-danger">{item.price ? `(${item.discount.toLocaleString()}%)` : ""}</span>
                                     </td>
                                     <td>{item.price.toLocaleString()} VND</td>
                                   </tr>
                                 ))
                               ) : (
                                 <tr>
-                                  <td colSpan="3">
-                                    Không có dịch vụ nào được chọn.
-                                  </td>
+                                  <td colSpan="3">Không có dịch vụ nào được chọn.</td>
                                 </tr>
                               )}
                             </tbody>
                             <tfoot>
                               <tr>
                                 <th colSpan="2">Tổng cộng</th>
-                                <th>
-                                  {data.service
-                                    ?.reduce(
-                                      (total, item) =>
-                                        total + item.price ||
-                                        item.compare_price,
-                                      0
-                                    )
-                                    .toLocaleString()}{" "}
-                                  VND
-                                </th>
+                                <th>{data.service?.reduce((total, item) => total + item.price || item.compare_price, 0).toLocaleString()} VND</th>
                               </tr>
                             </tfoot>
                           </Table>
-                          <Button
-                            className="mt-3"
-                            onClick={() => handleOpenPayment(data)}
-                            disabled={status !== 3}
-                            style={{
-                              display:
-                                user && Array.isArray(user.roles)
-                                  ? user.roles.includes("Staff")
-                                    ? "none"
-                                    : ""
-                                  : "",
-                            }}
-                          >
-                            Thanh toán
-                          </Button>
                         </Card.Body>
                       </Card>
                     </Col>
@@ -318,25 +255,18 @@ function Show() {
                     <Col xs={12}>
                       <Card>
                         <Card.Body>
-                          <Card.Title className="text-primary">
-                            Thông tin Khách hàng
-                          </Card.Title>
+                          <Card.Title className="text-primary">Thông tin Khách hàng</Card.Title>
                           <p>
                             <strong>Tên:</strong> {data.customer?.name}
                           </p>
                           <p>
-                            <strong>Email:</strong>{" "}
-                            <a href={`mailto:${data.customer?.email}`}>
-                              {data.customer?.email}
-                            </a>
+                            <strong>Email:</strong> <a href={`mailto:${data.customer?.email}`}>{data.customer?.email}</a>
                           </p>
                           <p>
-                            <strong>Số điện thoại:</strong>{" "}
-                            {data.customer?.phone || "Không có"}
+                            <strong>Số điện thoại:</strong> {data.customer?.phone || "Không có"}
                           </p>
                           <p>
-                            <strong>Địa chỉ:</strong>{" "}
-                            {data.customer?.address || "Không có"}
+                            <strong>Địa chỉ:</strong> {data.customer?.address || "Không có"}
                           </p>
                         </Card.Body>
                       </Card>
@@ -344,39 +274,27 @@ function Show() {
                     <Col xs={12}>
                       <Card>
                         <Card.Body>
-                          {status !== 0 && data.user !== null ? (
+                          {status !== 0 && data?.user !== null ? (
                             <>
-                              <Card.Title className="text-primary">
-                                Thông tin Nhân viên
-                              </Card.Title>
+                              <Card.Title className="text-primary">Thông tin Nhân viên</Card.Title>
                               <p>
                                 <strong>Tên:</strong> {data.user?.name}
                               </p>
                               <p>
-                                <strong>Email:</strong>{" "}
-                                <a href={`mailto:${data.user?.email}`}>
-                                  {data.user?.email}
-                                </a>
+                                <strong>Email:</strong> <a href={`mailto:${data.user?.email}`}>{data.user?.email}</a>
                               </p>
                               <p>
-                                <strong>Số điện thoại:</strong>{" "}
-                                {data.user?.phone || "Không có"}
+                                <strong>Số điện thoại:</strong> {data.user?.phone || "Không có"}
                               </p>
                               <p>
-                                <strong>Địa chi:</strong>{" "}
-                                {data.user?.address || "Không có"}
+                                <strong>Địa chi:</strong> {data.user?.address || "Không có"}
                               </p>
                             </>
                           ) : (
                             <>
-                              <Card.Title className="text-primary">
-                                Chọn nhân viên
-                              </Card.Title>
+                              <Card.Title className="text-primary">Chọn nhân viên</Card.Title>
                               <Form.Group className="mt-3" controlId="user_id">
-                                <Form.Select
-                                  value={userId}
-                                  onChange={(e) => setUserId(e.target.value)}
-                                >
+                                <Form.Select value={userId} onChange={(e) => setUserId(e.target.value)}>
                                   <option value="">Chọn nhân viên</option>
                                   {staff.length > 0 ? (
                                     staff.map((item) => (
@@ -385,9 +303,7 @@ function Show() {
                                       </option>
                                     ))
                                   ) : (
-                                    <option value="">
-                                      Không có nhân viên nào
-                                    </option>
+                                    <option value="">Không có nhân viên nào</option>
                                   )}
                                 </Form.Select>
                               </Form.Group>
@@ -397,19 +313,15 @@ function Show() {
                       </Card>
                     </Col>
                   </Row>
-                  <Col className="col-12 m-2 mt-4 me-5 d-flex justify-content-end ">
-                    <div className="m-2">
-                      <Button
-                        placeholder="Lưu lại"
-                        variant="primary"
-                        size="md"
-                        type="button"
-                        onClick={handleSubmit}
-                      >
-                        <span>Lưu lại </span>
-                        <FontAwesomeIcon icon={faFloppyDisk} />
-                      </Button>
-                    </div>
+                  <Col xs={12} className="d-flex gap-2 my-3 justify-content-end">
+                    <Button variant="primary" type="button" onClick={handleOpenPayment} disabled={status !== 3}>
+                      <span className="me-2">Tạo hóa đơn</span>
+                      <FontAwesomeIcon icon={faFirstOrderAlt} />
+                    </Button>
+                    <Button variant="primary" type="button" onClick={handleSubmit}>
+                      <span className="me-2">Lưu lại </span>
+                      <FontAwesomeIcon icon={faFloppyDisk} />
+                    </Button>
                   </Col>
                 </Col>
               </Row>
@@ -417,17 +329,8 @@ function Show() {
           </Col>
           {/* End DataGrid */}
         </Row>
-        {payment && (
-          <Payment
-            show={!!payment}
-            paymentBill={payment}
-            onClose={() => setPayment(null)}
-          />
-        )}
       </Container>
-      <p className="mb-4 m-4 text-end me-5 fw-bold">
-        © 2024, Developed by 30GLOW
-      </p>
+      <p className="mb-4 m-4 text-end me-5 fw-bold">© 2024, Developed by 30GLOW</p>
     </>
   );
 }

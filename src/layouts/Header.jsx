@@ -44,10 +44,10 @@ function Header() {
               </Nav.Link>
               {user?.roles?.includes("Manager") && (
                 <>
-                  <Nav.Link as={Link} to="/statistical" active={isActive("/statistical")}>
+                  <Nav.Link as={Link} to="/thong-ke" active={isActive("/thong-ke")}>
                     Thống kê
                   </Nav.Link>
-                  <Nav.Link as={Link} to="/bill" active={isActive("/bill")}>
+                  <Nav.Link as={Link} to="/hoa-don" active={isActive("/hoa-don")}>
                     Hóa đơn
                   </Nav.Link>
                 </>

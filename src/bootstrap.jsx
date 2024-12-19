@@ -3,7 +3,7 @@ import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 
 window.notyf = new Notyf({
-  duration: 3000,
+  duration: 2000,
   position: { x: "right", y: "top" },
   dismissible: true,
 });

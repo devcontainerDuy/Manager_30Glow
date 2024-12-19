@@ -2,8 +2,7 @@ import "./App.css";
 import "./bootstrap";
 import "notyf/notyf.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import Manager from "@/pages/Manager/Index.jsx";
 import Show from "@/pages/Manager/Show.jsx";
 import Statistical from "@/pages/Statistical/Statistical";
@@ -23,8 +22,8 @@ function App() {
           <Route element={<ManagerLayout />}>
             <Route path="/danh-sach-lich" element={<Manager />} />
             <Route path="/danh-sach-lich/chi-tiet/:id" element={<Show />} key="manager" />
-            <Route path="/statistical" element={<Statistical />} />
-            <Route path="/bill" element={<Bill />} />
+            <Route path="/thong-ke" element={<Statistical />} />
+            <Route path="/hoa-don" element={<Bill />} />
           </Route>
         </>
       ) : (
