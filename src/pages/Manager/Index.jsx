@@ -119,6 +119,8 @@ function Index() {
     const channel = window.pusher.subscribe("channelBookings");
 
     const handleCreated = (response) => {
+      console.log("Booking created:", response);
+      
       setBookings((prevData) => {
         if (prevData.some((b) => b.id === response.bookingData.id)) return prevData;
         return [response.bookingData, ...prevData];
@@ -126,6 +128,7 @@ function Index() {
     };
 
     const handleUpdated = (response) => {
+      console.log("Booking updated:", response);
       setBookings((prevData) => prevData.map((booking) => (booking.id === response.bookingData.id ? response.bookingData : booking)));
     };
 
