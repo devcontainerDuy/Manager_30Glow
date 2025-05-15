@@ -118,15 +118,25 @@ function Index() {
   useEffect(() => {
     const channel = window.pusher.subscribe("channelBookings");
 
-    channel.bind("BookingCreated", (response) => {
-      setBookings((prevData) => [response.bookingData, ...prevData]);
-    });
-
-    channel.bind("BookingUpdated", (response) => {
+    const handleCreated = (response) => {
       setBookings((prevData) => {
-        return prevData.map((booking) => (booking.id === response.bookingData.id ? response.bookingData : booking));
+        if (prevData.some((b) => b.id === response.bookingData.id)) return prevData;
+        return [response.bookingData, ...prevData];
       });
-    });
+    };
+
+    const handleUpdated = (response) => {
+      setBookings((prevData) => prevData.map((booking) => (booking.id === response.bookingData.id ? response.bookingData : booking)));
+    };
+
+    channel.bind("BookingCreated", handleCreated);
+    channel.bind("BookingUpdated", handleUpdated);
+
+    return () => {
+      channel.unbind("BookingCreated", handleCreated);
+      channel.unbind("BookingUpdated", handleUpdated);
+      window.pusher.unsubscribe("channelBookings");
+    };
   }, []);
 
   return (

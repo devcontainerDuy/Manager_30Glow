@@ -123,14 +123,27 @@ function Show() {
   useEffect(() => {
     const channel = window.pusher.subscribe("channelBookings");
 
-    channel.bind("BookingCreated", (response) => {
-      setData((prevData) => [response.bookingData, ...prevData]);
-    });
+    const handleCreated = (response) => {
+      if (response.bookingData.id === Number(id)) {
+        setData(response.bookingData);
+      }
+    };
 
-    channel.bind("BookingUpdated", (response) => {
-      setData(response.bookingData);
-    });
-  }, [data]);
+    const handleUpdated = (response) => {
+      if (response.bookingData.id === Number(id)) {
+        setData(response.bookingData);
+      }
+    };
+
+    channel.bind("BookingCreated", handleCreated);
+    channel.bind("BookingUpdated", handleUpdated);
+
+    return () => {
+      channel.unbind("BookingCreated", handleCreated);
+      channel.unbind("BookingUpdated", handleUpdated);
+      window.pusher.unsubscribe("channelBookings");
+    };
+  }, [id]);
 
   return (
     <>
