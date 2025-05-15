@@ -2,15 +2,11 @@ Options -MultiViews
 RewriteEngine On
 RewriteBase /
 
-# Nếu request không phải là file thật
+# Nếu request không phải là file, thư mục hoặc symlink thật thì chuyển về index.html
 RewriteCond %{REQUEST_FILENAME} !-f
-# Nếu request không phải là thư mục thật
 RewriteCond %{REQUEST_FILENAME} !-d
-# Nếu request không phải là symbolic link
 RewriteCond %{REQUEST_FILENAME} !-l
-
-# Chuyển hướng tất cả requests tới index.html
-RewriteRule . /index.html [QSA,L]
+RewriteRule ^ index.html [QSA,L]
 
 # Bảo vệ file .htaccess
 <Files .htaccess>
